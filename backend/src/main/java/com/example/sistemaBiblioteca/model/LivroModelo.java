@@ -15,6 +15,7 @@ public class LivroModelo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long livroId;
+    
     private String imagemDoLivro;
     private String nomeDoLivro;
     private String autoDoLivro;
