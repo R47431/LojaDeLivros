@@ -1,4 +1,4 @@
-package com.example.sistemaBiblioteca.model;
+package com.example.sistemaBiblioteca.CRUDDeLivros.model;
 
 
 import jakarta.persistence.Entity;

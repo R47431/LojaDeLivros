@@ -1,11 +1,7 @@
-package com.example.sistemaBiblioteca.controller;
+package com.example.sistemaBiblioteca.CRUDDeLivros.controller;
 
-import com.example.sistemaBiblioteca.model.LivroModelo;
-import com.example.sistemaBiblioteca.repository.LivroRepository;
-import com.example.sistemaBiblioteca.service.LivroService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,8 +12,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.example.sistemaBiblioteca.CRUDDeLivros.model.LivroModelo;
+import com.example.sistemaBiblioteca.CRUDDeLivros.repository.LivroRepository;
+import com.example.sistemaBiblioteca.CRUDDeLivros.service.LivroService;
+
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
@@ -50,7 +49,6 @@ public class LivroController {
             String diretorio = livroService.salvaImagem(livroModelo);
             Files.copy(imagem.getInputStream(), Paths.get(diretorio), StandardCopyOption.REPLACE_EXISTING);
             livroRepository.save(livroModelo);
-            new ResponseEntity<>(HttpStatus.CREATED);
             return ResponseEntity.ok(livroModelo);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -90,4 +88,22 @@ public class LivroController {
             return ResponseEntity.notFound().build();
         }
     }
+
+    /* DESBLOQUEAR PARA LIMPA
+    @DeleteMapping("/all")
+    public void deletarAll() {
+        Iterable<LivroModelo> obterId = livroRepository.findAll();
+        for (LivroModelo livroModelo : obterId) {
+            String deletaImagem = livroService.salvaImagem(livroModelo);
+
+            File imagem = new File(deletaImagem);
+            if (imagem.exists()) {
+                imagem.delete();
+            }
+        }
+        livroRepository.deleteAll();
+
+    }
+    */
+
 }
