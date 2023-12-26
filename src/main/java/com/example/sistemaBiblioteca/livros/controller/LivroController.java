@@ -1,4 +1,4 @@
-package com.example.sistemaBiblioteca.CRUDDeLivros.controller;
+package com.example.sistemaBiblioteca.livros.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.example.sistemaBiblioteca.CRUDDeLivros.model.LivroModelo;
-import com.example.sistemaBiblioteca.CRUDDeLivros.repository.LivroRepository;
-import com.example.sistemaBiblioteca.CRUDDeLivros.service.LivroService;
+import com.example.sistemaBiblioteca.livros.model.LivroModelo;
+import com.example.sistemaBiblioteca.livros.repository.LivroRepository;
+import com.example.sistemaBiblioteca.livros.service.LivroService;
 
 import java.io.File;
 import java.nio.file.Files;

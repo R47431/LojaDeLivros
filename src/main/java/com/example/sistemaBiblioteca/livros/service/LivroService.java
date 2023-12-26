@@ -1,8 +1,8 @@
-package com.example.sistemaBiblioteca.CRUDDeLivros.service;
+package com.example.sistemaBiblioteca.livros.service;
 
 import org.springframework.stereotype.Service;
 
-import com.example.sistemaBiblioteca.CRUDDeLivros.model.LivroModelo;
+import com.example.sistemaBiblioteca.livros.model.LivroModelo;
 
 import java.io.File;
 import java.nio.file.Path;
