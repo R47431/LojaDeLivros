@@ -13,10 +13,10 @@ public class LivroService {
 
 
     Path currentPath = Paths.get(System.getProperty("user.dir"));
-    Path desiredPath = currentPath.getParent();
-    String diretorio = desiredPath.toString() + "/backend/src/main/java/com/example/sistemaBiblioteca/imagem";
+    //Path desiredPath = currentPath.getParent();
+    String diretorio = currentPath.toString() + "/imagem";
 
-    public String salvaImagem(LivroModelo livroModelo) {
+    public String diretorioDaImagem(LivroModelo livroModelo) {
         String nomeImagem = livroModelo.getLivroId() + ".jpg";
         return diretorio + File.separator + nomeImagem;
     }

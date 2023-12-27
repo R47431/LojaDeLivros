@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -27,6 +28,7 @@ import java.util.Optional;
 public class LivroController {
 
     private final LivroRepository livroRepository;
+
     @Autowired
     private LivroService livroService;
 
@@ -42,17 +44,20 @@ public class LivroController {
     }
 
     @PostMapping
-    public ResponseEntity<?> cadastraLivro(LivroModelo livroModelo, MultipartFile imagem) {
+    public ResponseEntity<?> cadastraLivro(LivroModelo livroModelo, @RequestPart("imagem") MultipartFile imagem) {
         try {
+
             livroRepository.save(livroModelo);
             livroModelo.setImagemDoLivro(livroModelo.getLivroId() + ".jpg");
-            String diretorio = livroService.salvaImagem(livroModelo);
+            String diretorio = livroService.diretorioDaImagem(livroModelo);
             Files.copy(imagem.getInputStream(), Paths.get(diretorio), StandardCopyOption.REPLACE_EXISTING);
             livroRepository.save(livroModelo);
+
             return ResponseEntity.ok(livroModelo);
+
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Ocorreu um erro ao processar o Cadastro.");
+                    .body("Ocorreu um erro ao processar o Cadastro." + e.getMessage());
         }
     }
 
@@ -61,7 +66,7 @@ public class LivroController {
         try {
             livroRepository.save(livroModelo);
             livroModelo.setImagemDoLivro(livroModelo.getLivroId() + ".jpg");
-            String diretorio = livroService.salvaImagem(livroModelo);
+            String diretorio = livroService.diretorioDaImagem(livroModelo);
             Files.copy(imagem.getInputStream(), Paths.get(diretorio), StandardCopyOption.REPLACE_EXISTING);
             livroRepository.save(livroModelo);
             new ResponseEntity<>(HttpStatus.ACCEPTED);
@@ -76,7 +81,7 @@ public class LivroController {
     public ResponseEntity<?> deletarLivro(@PathVariable Long livroId) {
         Optional<LivroModelo> obterId = livroRepository.findById(livroId);
         if (obterId.isPresent()) {
-            String deletaImagem = livroService.salvaImagem(obterId.get());
+            String deletaImagem = livroService.diretorioDaImagem(obterId.get());
 
             File imagem = new File(deletaImagem);
             if (imagem.exists()) {
@@ -89,21 +94,23 @@ public class LivroController {
         }
     }
 
-    /* DESBLOQUEAR PARA LIMPA
-    @DeleteMapping("/all")
-    public void deletarAll() {
-        Iterable<LivroModelo> obterId = livroRepository.findAll();
-        for (LivroModelo livroModelo : obterId) {
-            String deletaImagem = livroService.salvaImagem(livroModelo);
-
-            File imagem = new File(deletaImagem);
-            if (imagem.exists()) {
-                imagem.delete();
-            }
-        }
-        livroRepository.deleteAll();
-
-    }
-    */
+    /*
+     * DESBLOQUEAR PARA LIMPA
+     * 
+     * @DeleteMapping("/all")
+     * public void deletarAll() {
+     * Iterable<LivroModelo> obterId = livroRepository.findAll();
+     * for (LivroModelo livroModelo : obterId) {
+     * String deletaImagem = livroService.diretorioDaImagem(livroModelo);
+     * 
+     * File imagem = new File(deletaImagem);
+     * if (imagem.exists()) {
+     * imagem.delete();
+     * }
+     * }
+     * livroRepository.deleteAll();
+     * 
+     * }
+     */
 
 }
