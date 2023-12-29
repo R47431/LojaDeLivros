@@ -12,7 +12,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import jakarta.persistence.criteria.CriteriaBuilder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -29,6 +28,7 @@ public class ClienteModelo {
     private String email;
 
     @OneToMany(mappedBy = "cliente")
+    //TODO se de bucha retire isso @JsonIgnore
     @JsonIgnore
     private List<EmprestimoModelo> historicoDeEmprestimos ;
 }

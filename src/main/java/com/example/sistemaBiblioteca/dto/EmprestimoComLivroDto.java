@@ -12,6 +12,6 @@ public class EmprestimoComLivroDto {
    private Long emprestimoId;
    private LocalDate dataEmprestimo;
    private LocalDate dataDevolucao;
-   private LivroDto livroDto;
+   private LivroDto livro;
   
 }
