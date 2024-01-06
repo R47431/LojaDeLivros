@@ -1,8 +1,9 @@
-package com.example.sistemaBiblioteca.repository;
+package com.example.sistemaBiblioteca.livros.repository;
 
-import com.example.sistemaBiblioteca.model.LivroModelo;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
+
+import com.example.sistemaBiblioteca.model.LivroModelo;
 
 @Repository
 public interface LivroRepository extends CrudRepository<LivroModelo,Long> {
