@@ -3,8 +3,8 @@ package com.example.sistemaBiblioteca.client.model;
 
 import java.util.List;
 
+import com.example.sistemaBiblioteca.dto.EmprestimoComLivroDto;
 import com.example.sistemaBiblioteca.emprestimos.model.EmprestimoModelo;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

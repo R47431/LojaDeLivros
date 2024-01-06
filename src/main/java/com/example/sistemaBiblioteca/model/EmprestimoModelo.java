@@ -31,4 +31,3 @@ public class EmprestimoModelo {
    @Temporal(TemporalType.DATE)
    private LocalDate dataDevolucao;
 }
-
