@@ -13,13 +13,11 @@ import com.example.sistemaBiblioteca.mapper.EmprestimoMapper;
 
 @Service
 public class EmprestimoService {
+    private EmprestimoMapper emprestimoMapper;
 
-   public List<EmprestimoComLivroDto> convertToDtoList(List<EmprestimoModelo> emprestimoModelos) {
-      return EmprestimoMapper.INSTANCE.toDtoList(emprestimoModelos);
-   }
+    public List<EmprestimoComLivroDto> convertToDtoList(List<EmprestimoModelo> emprestimoModelos) {
+        return emprestimoMapper.toDtoList(emprestimoModelos);
+    }
 
-   public ClienteComEmprestimosDto toDto(ClienteModelo clienteModelos) {
-      return ClienteMapper.INSTANCE.toDto(clienteModelos);
-   }
 
 }

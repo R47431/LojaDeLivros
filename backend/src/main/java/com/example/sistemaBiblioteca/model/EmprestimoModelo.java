@@ -8,6 +8,9 @@ import java.time.LocalDate;
 import javax.validation.constraints.Future;
 import javax.validation.constraints.FutureOrPresent;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
+
 @Getter
 @Setter
 @Entity
@@ -15,8 +18,10 @@ import javax.validation.constraints.FutureOrPresent;
 public class EmprestimoModelo {
    @Id
    @GeneratedValue(strategy = GenerationType.IDENTITY)
+   @Column(name = "emprestimo_id")
    private Long emprestimoId;
 
+   @JsonBackReference
    @ManyToOne
    @JoinColumn(name = "cliente_id")
    private ClienteModelo cliente;
@@ -25,12 +30,11 @@ public class EmprestimoModelo {
    @JoinColumn(name = "livro_id")
    private LivroModelo livro;
 
-   @FutureOrPresent
+   @FutureOrPresent(message = "Data de empréstimo deve ser presente ou futura")
    @Temporal(TemporalType.DATE)
    private LocalDate dataEmprestimo;
 
-
-   @Future
+   @Future(message = "Data de devolução deve ser no futuro")
    @Temporal(TemporalType.DATE)
    private LocalDate dataDevolucao;
 }
