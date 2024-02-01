@@ -19,6 +19,9 @@ public class ClienteService {
     }
 
     public ClienteModelo findById(Long clienteId) {
+        if (clienteId == null) {
+            throw new IllegalArgumentException("ID não pode ser nulo");
+        }
         Optional<ClienteModelo> clienteOptional = clienteRepository.findById(clienteId);
         return clienteOptional.orElse(null);
     }

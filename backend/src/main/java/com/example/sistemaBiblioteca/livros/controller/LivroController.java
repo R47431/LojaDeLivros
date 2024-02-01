@@ -46,6 +46,9 @@ public class LivroController {
     @PostMapping
     public ResponseEntity<?> cadastraLivro(LivroModelo livroModelo, @RequestPart("imagem") MultipartFile imagem) {
         try {
+            if (livroModelo == null) {
+                throw new IllegalArgumentException("ID não pode ser nulo");
+            }
 
             livroRepository.save(livroModelo);
             livroModelo.setImagemDoLivro(livroModelo.getLivroId() + ".jpg");
@@ -64,6 +67,9 @@ public class LivroController {
     @PutMapping
     public ResponseEntity<?> alteraLivro(LivroModelo livroModelo, MultipartFile imagem) {
         try {
+            if (livroModelo == null) {
+                throw new IllegalArgumentException("LivroModelo não pode ser nulo");
+            }
             livroRepository.save(livroModelo);
             livroModelo.setImagemDoLivro(livroModelo.getLivroId() + ".jpg");
             String diretorio = livroService.diretorioDaImagem(livroModelo);
@@ -79,10 +85,12 @@ public class LivroController {
 
     @DeleteMapping(path = "/{livroId}")
     public ResponseEntity<?> deletarLivro(@PathVariable Long livroId) {
+        if (livroId == null) {
+            throw new IllegalArgumentException("livroId não pode ser nulo");
+        }
         Optional<LivroModelo> obterId = livroRepository.findById(livroId);
         if (obterId.isPresent()) {
             String deletaImagem = livroService.diretorioDaImagem(obterId.get());
-
             File imagem = new File(deletaImagem);
             if (imagem.exists()) {
                 imagem.delete();

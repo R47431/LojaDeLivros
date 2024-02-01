@@ -30,7 +30,18 @@ public class ClienteComMapperimpl implements ClienteMapper {
         clienteId = clienteModelo.getClienteId();
         nome = clienteModelo.getNome();
         email = clienteModelo.getEmail();
-        emprestimos = emprestimoModeloListToEmprestimoComLivroDtoList(clienteModelo.getEmprestimos());
+       emprestimos = emprestimoModeloListToEmprestimoComLivroDtoList(clienteModelo.getEmprestimos());
+       
+       // List<EmprestimoModelo> list = clienteModelo.getEmprestimos();
+
+       
+       /*
+       if (list != null) {
+            return null;
+        }*/
+        
+        
+        
 
         ClienteComEmprestimosDto clienteComEmprestimosDto = new ClienteComEmprestimosDto(clienteId, nome, email,
                 emprestimos);
@@ -90,16 +101,21 @@ public class ClienteComMapperimpl implements ClienteMapper {
         return emprestimoComLivroDto;
     }
 
-    protected List<EmprestimoComLivroDto> emprestimoModeloListToEmprestimoComLivroDtoList(List<EmprestimoModelo> list) {
-        if (list == null) {
-            return null;
-        }
-
-        List<EmprestimoComLivroDto> list1 = new ArrayList<EmprestimoComLivroDto>(list.size());
-        for (EmprestimoModelo emprestimoModelo : list) {
-            list1.add(emprestimoModeloToEmprestimoComLivroDto(emprestimoModelo));
-        }
-
-        return list1;
-    }
+    
+     protected List<EmprestimoComLivroDto>
+     emprestimoModeloListToEmprestimoComLivroDtoList(List<EmprestimoModelo> list)
+     {
+     if (list == null) {
+     return null;
+     }
+     
+     List<EmprestimoComLivroDto> list1 = new
+     ArrayList<EmprestimoComLivroDto>(list.size());
+     for (EmprestimoModelo emprestimoModelo : list) {
+      list1.add(emprestimoModeloToEmprestimoComLivroDto(emprestimoModelo));
+      }
+      
+      return list1;
+      }
+     
 }

@@ -37,4 +37,16 @@ public class EmprestimoModelo {
    @Future(message = "Data de devolução deve ser no futuro")
    @Temporal(TemporalType.DATE)
    private LocalDate dataDevolucao;
+
+   public EmprestimoModelo(ClienteModelo cliente, LivroModelo livro,
+         @FutureOrPresent(message = "Data de empréstimo deve ser presente ou futura") LocalDate dataEmprestimo) {
+      this.cliente = cliente;
+      this.livro = livro;
+      this.dataEmprestimo = dataEmprestimo;
+   }
+
+   public EmprestimoModelo() {
+   }
+
+   
 }

@@ -6,5 +6,9 @@ public record EmprestimoComLivroDto(
       Long emprestimoId,
       LocalDate dataEmprestimo,
       LocalDate dataDevolucao,
-      LivroDto livro) {
+      LivroDto livro
+
+      
+
+      ) {
 }

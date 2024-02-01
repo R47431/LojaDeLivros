@@ -2,7 +2,6 @@ package com.example.sistemaBiblioteca.emprestimos.controller;
 
 import java.time.LocalDate;
 
-import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,14 +9,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import com.example.sistemaBiblioteca.model.ClienteModelo;
 import com.example.sistemaBiblioteca.client.repository.ClienteRepository;
-
-import com.example.sistemaBiblioteca.dto.LivroDto;
 import com.example.sistemaBiblioteca.emprestimos.repository.EmprestimosRepository;
 import com.example.sistemaBiblioteca.emprestimos.service.EmprestimoService;
+import com.example.sistemaBiblioteca.exception.EntityNotFoundException;
 import com.example.sistemaBiblioteca.model.EmprestimoModelo;
 import com.example.sistemaBiblioteca.model.LivroModelo;
 
@@ -37,69 +34,58 @@ public class EmprestimoController {
 
     @Autowired
     public EmprestimoController(EmprestimosRepository emprestimosRepository, LivroRepository livroRepository,
-                                ClienteRepository clienteRepository, EmprestimoService emprestimoService) {
+            ClienteRepository clienteRepository, EmprestimoService emprestimoService) {
         this.emprestimosRepository = emprestimosRepository;
         this.livroRepository = livroRepository;
         this.clienteRepository = clienteRepository;
         this.emprestimoService = emprestimoService;
     }
 
-
     @PostMapping(path = "/{clienteId}/{livroId}")
-    public ResponseEntity<String> realizarEmprestimo(@PathVariable Long clienteId, LivroDto livroDto) {
+    public ResponseEntity<?> realizarEmprestimo(@PathVariable Long clienteId, @PathVariable Long livroId) {
         try {
-            Optional<ClienteModelo> clienteOptional = clienteRepository.findById(clienteId);
-            if (!clienteOptional.isPresent()) {
-                LOGGER.warn("Cliente não encontrado com ID: {}", clienteId);
-                return ResponseEntity.notFound().build();
-            }
-            ClienteModelo cliente = clienteOptional.get();
 
-            Optional<LivroModelo> livroOptional = livroRepository.findById(livroDto.livroId());
-            if (!livroOptional.isPresent()) {
-                LOGGER.warn("Livro não encontrado com ID: {}", livroDto.livroId());
-                return ResponseEntity.notFound().build();
-            }
-            LivroModelo livro = livroOptional.get();
-
+            ClienteModelo clienteOptional = emprestimoService.encontrarEntidadePorId(clienteRepository, clienteId, "Cliente Not Found");
+            LivroModelo livroOptional = emprestimoService.encontrarEntidadePorId(livroRepository, livroId, "Livro Not Found");
+            /*         
             EmprestimoModelo emprestimo = new EmprestimoModelo();
-            emprestimo.setCliente(cliente);
-            emprestimo.setLivro(livro);
+            emprestimo.setCliente(clienteOptional);
+            emprestimo.setLivro(livroOptional);
             emprestimo.setDataEmprestimo(LocalDate.now());
             emprestimosRepository.save(emprestimo);
-            emprestimosRepository.save(emprestimo);
+            */
+
+            EmprestimoModelo  emprestimo = emprestimosRepository.save(new EmprestimoModelo(clienteOptional,livroOptional,LocalDate.now()));
+
             LOGGER.info("Empréstimo realizado com sucesso. Cliente ID: {}, Livro ID: {}, Empretimo: {}", clienteId,
-                    livroDto.livroId(), emprestimo.getEmprestimoId());
+                    livroId, emprestimo.getEmprestimoId());
+                    
             return ResponseEntity.status(HttpStatus.CREATED).body("Empréstimo realizado com sucesso");
+
+        } catch (EntityNotFoundException e) {
+            LOGGER.error("Entidade nao NotFound {}",e);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e);
         } catch (Exception e) {
-            LOGGER.error("Erro ao realizar empréstimo. Cliente ID: {}, Livro ID: {}", clienteId, livroDto.livroId(),
+            LOGGER.error("Erro ao realizar empréstimo. Cliente ID: {}, Livro ID: {}", clienteId, livroId,
                     e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
     @PostMapping("/{clienteId}/devolver/{livroId}/{emprestimoId}")
-    public ResponseEntity<String> realizarDevolucao(
+    public ResponseEntity<?> realizarDevolucao(
             @PathVariable Long clienteId,
             @PathVariable Long livroId,
-            @PathVariable Long emprestimoId) {
+            @PathVariable Long emprestimoId
+            ) {
         try {
-            ClienteModelo cliente = getClienteOrThrow(clienteId);
-            LivroModelo livro = getLivroOrThrow(livroId);
-            EmprestimoModelo emprestimo = getEmprestimoOrThrow(emprestimoId);
-
-            if (emprestimo.getDataDevolucao() != null) {
-                LOGGER.warn("Tentativa de devolução de um empréstimo já devolvido. Empréstimo ID: {}", emprestimoId);
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Livro já foi devolvido anteriormente.");
-            }
-
-            if (!emprestimo.getCliente().equals(cliente) || !emprestimo.getLivro().equals(livro)) {
-                LOGGER.warn(
-                        "Dados de empréstimo inválidos para devolução. Cliente ID: {}, Livro ID: {}, Empréstimo ID: {}",
-                        clienteId, livroId, emprestimoId);
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                        "Dados de empréstimo inválidos para devolução.");
-            }
+            ClienteModelo cliente = emprestimoService.encontrarEntidadePorId(clienteRepository, clienteId, "Cliente Not Found");
+            LivroModelo livro = emprestimoService.encontrarEntidadePorId(livroRepository, livroId, "Livro Not Found");
+            EmprestimoModelo emprestimo = emprestimoService.encontrarEntidadePorId(emprestimosRepository, emprestimoId, "Empréstimo Not Found");
+            
+            emprestimoService.verificarNull(emprestimo.getDataDevolucao(), "Livro já foi devolvido anteriormente.");
+            emprestimoService.verificarIgualdade(emprestimo.getCliente(), cliente, "Cliente", clienteId);
+            emprestimoService.verificarIgualdade(emprestimo.getLivro(), livro, "Livro", livroId);
 
             emprestimo.setDataDevolucao(LocalDate.now());
             emprestimosRepository.save(emprestimo);
@@ -114,7 +100,7 @@ public class EmprestimoController {
         }
     }
 
-    // TODO muda para um service
+    /*
     private ClienteModelo getClienteOrThrow(Long clienteId) {
         return clienteRepository.findById(clienteId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Cliente não encontrado"));
@@ -129,4 +115,24 @@ public class EmprestimoController {
         return emprestimosRepository.findById(emprestimoId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Empréstimo não encontrado"));
     }
+    */
+
+
+    //TODO isso ficava na devolucao
+    /*
+        
+            if (emprestimo.getDataDevolucao() != null) {
+                LOGGER.warn("Tentativa de devolução de um empréstimo já devolvido. Empréstimo ID: {}", emprestimoId);
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Livro já foi devolvido anteriormente.");
+            }
+     
+            if (!emprestimo.getCliente().equals(cliente) || !emprestimo.getLivro().equals(livro)) {
+                LOGGER.warn(
+                        "Dados de empréstimo inválidos para devolução. Cliente ID: {}, Livro ID: {}, Empréstimo ID: {}",
+                        clienteId, livroId, emprestimoId);
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                        "Dados de empréstimo inválidos para devolução.");
+            }
+
+     */
 }

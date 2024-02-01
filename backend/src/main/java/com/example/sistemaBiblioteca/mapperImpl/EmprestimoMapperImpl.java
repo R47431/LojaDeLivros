@@ -38,6 +38,7 @@ public class EmprestimoMapperImpl implements EmprestimoMapper {
         LocalDate dataEmprestimo = null;
         LocalDate dataDevolucao = null;
         LivroDto livro = null;
+        
 
         emprestimoId = emprestimoModelo.getEmprestimoId();
         dataEmprestimo = emprestimoModelo.getDataEmprestimo();
