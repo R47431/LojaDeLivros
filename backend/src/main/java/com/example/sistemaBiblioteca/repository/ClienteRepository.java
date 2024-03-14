@@ -9,6 +9,5 @@ import com.example.sistemaBiblioteca.model.ClienteModelo;
 
 @Repository
 public interface ClienteRepository extends JpaRepository<ClienteModelo,Long> {
-
    
 }

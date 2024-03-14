@@ -46,4 +46,25 @@ public class ClienteModelo {
     @JsonManagedReference
     @OneToMany(mappedBy = "cliente")
     private List<EmprestimoModelo> emprestimos;
+
+
+    public ClienteModelo(Long clienteId, String nome, LocalDate dataDeNascimento, Integer numeroDeTelefone, String email) {
+        this.clienteId = clienteId;
+        this.nome = nome;
+        this.dataDeNascimento = dataDeNascimento;
+        this.numeroDeTelefone = numeroDeTelefone;
+        this.email = email;
+    }
+
+
+    public ClienteModelo(Long clienteId) {
+        this.clienteId = clienteId;
+    }
+
+
+    public ClienteModelo() {
+    }
+
+    
+    
 }

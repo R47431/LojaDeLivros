@@ -11,10 +11,11 @@ import java.nio.file.Paths;
 @Service
 public class LivroService {
 
+    //TODO criar tratamento de execao para se ocorra imagem null pedir para fazer novaemnte
 
     Path currentPath = Paths.get(System.getProperty("user.dir"));
-    //Path desiredPath = currentPath.getParent();
-    String diretorio = currentPath.toString() + "/imagem";
+    Path desiredPath = currentPath.getParent();
+    String diretorio = desiredPath.toString() + "/imagem";
 
     public String diretorioDaImagem(LivroModelo livroModelo) {
         String nomeImagem = livroModelo.getLivroId() + ".jpg";

@@ -7,6 +7,7 @@ import java.util.List;
 import org.springframework.stereotype.Component;
 
 import com.example.sistemaBiblioteca.dto.ClienteComEmprestimosDto;
+import com.example.sistemaBiblioteca.dto.ClienteDTO;
 import com.example.sistemaBiblioteca.dto.EmprestimoComLivroDto;
 import com.example.sistemaBiblioteca.dto.LivroDto;
 import com.example.sistemaBiblioteca.mapper.ClienteMapper;
@@ -17,62 +18,67 @@ import com.example.sistemaBiblioteca.model.LivroModelo;
 @Component
 public class ClienteComMapperimpl implements ClienteMapper {
     @Override
-    public ClienteComEmprestimosDto toDto(ClienteModelo clienteModelo) {
+    public ClienteComEmprestimosDto toClienteComEmprestimosDto(ClienteModelo clienteModelo) {
         if (clienteModelo == null) {
             return null;
         }
 
-        Long clienteId = null;
-        String nome = null;
-        String email = null;
-        List<EmprestimoComLivroDto> emprestimos = null;
-
-        clienteId = clienteModelo.getClienteId();
-        nome = clienteModelo.getNome();
-        email = clienteModelo.getEmail();
-       emprestimos = emprestimoModeloListToEmprestimoComLivroDtoList(clienteModelo.getEmprestimos());
-       
-       // List<EmprestimoModelo> list = clienteModelo.getEmprestimos();
-
-       
-       /*
-       if (list != null) {
-            return null;
-        }*/
-        
-        
-        
+        Long clienteId = clienteModelo.getClienteId();
+        String nome = clienteModelo.getNome();
+        String email = clienteModelo.getEmail();
+        List<EmprestimoComLivroDto> emprestimos = emprestimoModeloListToEmprestimoComLivroDtoList(
+                clienteModelo.getEmprestimos());
 
         ClienteComEmprestimosDto clienteComEmprestimosDto = new ClienteComEmprestimosDto(clienteId, nome, email,
                 emprestimos);
-
         return clienteComEmprestimosDto;
     }
 
-    protected LivroDto livroModeloToLivroDto(LivroModelo livroModelo) {
+    @Override
+    public ClienteDTO toClienteDTO(ClienteModelo clienteModelo) {
+        if (clienteModelo == null) {
+            return null;
+        }
+        Long clienteId = clienteModelo.getClienteId();
+        String nome = clienteModelo.getNome();
+        LocalDate dataDeNascimento = clienteModelo.getDataDeNascimento();
+        Integer numeroDeTelefone = clienteModelo.getNumeroDeTelefone();
+        String email = clienteModelo.getEmail();
+
+        ClienteDTO clienteDTO = new ClienteDTO(clienteId, nome, dataDeNascimento, numeroDeTelefone, email);
+        return clienteDTO;
+    }
+
+    @Override
+    public ClienteModelo toClienteModelo(ClienteDTO clienteDTO) {
+        if (clienteDTO == null) {
+            return null;
+        }
+        Long clienteId = clienteDTO.clienteId();
+        String nome = clienteDTO.nome();
+        LocalDate dataDeNascimento = clienteDTO.dataDeNascimento();
+        Integer numeroDeTelefone = clienteDTO.numeroDeTelefone();
+        String email = clienteDTO.email();
+
+        ClienteModelo clienteModelo = new ClienteModelo(clienteId, nome, dataDeNascimento, numeroDeTelefone, email);
+        return clienteModelo;
+
+    }
+
+    protected LivroDto ToLivroDto(LivroModelo livroModelo) {
         if (livroModelo == null) {
             return null;
         }
 
-        Long livroId = null;
-        String imagemDoLivro = null;
-        String titulo = null;
-        String nomeDoAutor = null;
-        String nacionalidade = null;
-        LocalDate data = null;
-        String editora = null;
-        String genero = null;
-        String sinopse = null;
-
-        livroId = livroModelo.getLivroId();
-        imagemDoLivro = livroModelo.getImagemDoLivro();
-        titulo = livroModelo.getTitulo();
-        nomeDoAutor = livroModelo.getNomeDoAutor();
-        nacionalidade = livroModelo.getNacionalidade();
-        data = livroModelo.getData();
-        editora = livroModelo.getEditora();
-        genero = livroModelo.getGenero();
-        sinopse = livroModelo.getSinopse();
+        Long livroId = livroModelo.getLivroId();
+        String imagemDoLivro = livroModelo.getImagemDoLivro();
+        String titulo = livroModelo.getTitulo();
+        String nomeDoAutor = livroModelo.getNomeDoAutor();
+        String nacionalidade = livroModelo.getNacionalidade();
+        LocalDate data = livroModelo.getData();
+        String editora = livroModelo.getEditora();
+        String genero = livroModelo.getGenero();
+        String sinopse = livroModelo.getSinopse();
 
         LivroDto livroDto = new LivroDto(livroId, imagemDoLivro, titulo, nomeDoAutor, nacionalidade, data, editora,
                 genero, sinopse);
@@ -85,15 +91,10 @@ public class ClienteComMapperimpl implements ClienteMapper {
             return null;
         }
 
-        Long emprestimoId = null;
-        LocalDate dataEmprestimo = null;
-        LocalDate dataDevolucao = null;
-        LivroDto livro = null;
-
-        emprestimoId = emprestimoModelo.getEmprestimoId();
-        dataEmprestimo = emprestimoModelo.getDataEmprestimo();
-        dataDevolucao = emprestimoModelo.getDataDevolucao();
-        livro = livroModeloToLivroDto(emprestimoModelo.getLivro());
+        Long emprestimoId = emprestimoModelo.getEmprestimoId();
+        LocalDate dataEmprestimo = emprestimoModelo.getDataEmprestimo();
+        LocalDate dataDevolucao = emprestimoModelo.getDataDevolucao();
+        LivroDto livro = ToLivroDto(emprestimoModelo.getLivro());
 
         EmprestimoComLivroDto emprestimoComLivroDto = new EmprestimoComLivroDto(emprestimoId, dataEmprestimo,
                 dataDevolucao, livro);
@@ -101,21 +102,17 @@ public class ClienteComMapperimpl implements ClienteMapper {
         return emprestimoComLivroDto;
     }
 
-    
-     protected List<EmprestimoComLivroDto>
-     emprestimoModeloListToEmprestimoComLivroDtoList(List<EmprestimoModelo> list)
-     {
-     if (list == null) {
-     return null;
-     }
-     
-     List<EmprestimoComLivroDto> list1 = new
-     ArrayList<EmprestimoComLivroDto>(list.size());
-     for (EmprestimoModelo emprestimoModelo : list) {
-      list1.add(emprestimoModeloToEmprestimoComLivroDto(emprestimoModelo));
-      }
-      
-      return list1;
-      }
-     
+    protected List<EmprestimoComLivroDto> emprestimoModeloListToEmprestimoComLivroDtoList(List<EmprestimoModelo> list) {
+        if (list == null) {
+            return null;
+        }
+
+        List<EmprestimoComLivroDto> list1 = new ArrayList<EmprestimoComLivroDto>(list.size());
+        for (EmprestimoModelo emprestimoModelo : list) {
+            list1.add(emprestimoModeloToEmprestimoComLivroDto(emprestimoModelo));
+        }
+
+        return list1;
+    }
+
 }

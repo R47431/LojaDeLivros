@@ -10,7 +10,6 @@ import javax.validation.constraints.FutureOrPresent;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
-
 @Getter
 @Setter
 @Entity
@@ -45,8 +44,19 @@ public class EmprestimoModelo {
       this.dataEmprestimo = dataEmprestimo;
    }
 
+   public EmprestimoModelo(Long emprestimoId, ClienteModelo cliente, LivroModelo livro,
+         @FutureOrPresent(message = "Data de empréstimo deve ser presente ou futura") LocalDate dataEmprestimo,
+         @Future(message = "Data de devolução deve ser no futuro") LocalDate dataDevolucao) {
+      this.emprestimoId = emprestimoId;
+      this.cliente = cliente;
+      this.livro = livro;
+      this.dataEmprestimo = dataEmprestimo;
+      this.dataDevolucao = dataDevolucao;
+   }
+
    public EmprestimoModelo() {
    }
 
    
+
 }

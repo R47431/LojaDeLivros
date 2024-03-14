@@ -1,6 +1,9 @@
 package com.example.sistemaBiblioteca.controller;
 
+import javax.validation.constraints.NotNull;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,8 +14,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.sistemaBiblioteca.model.ClienteModelo;
 import com.example.sistemaBiblioteca.repository.ClienteRepository;
-import com.example.sistemaBiblioteca.service.ClienteService;
+import com.example.sistemaBiblioteca.service.GlobalService;
 import com.example.sistemaBiblioteca.dto.ClienteComEmprestimosDto;
+import com.example.sistemaBiblioteca.dto.ClienteDTO;
 import com.example.sistemaBiblioteca.mapper.ClienteMapper;
 
 @RestController
@@ -20,23 +24,26 @@ import com.example.sistemaBiblioteca.mapper.ClienteMapper;
 public class ClienteController {
 
     private final ClienteRepository clienteRepository;
-    private final ClienteService clienteService;
+    private final GlobalService globalService;
     private final ClienteMapper clienteMapper;
+  
+
 
     @Autowired
-    public ClienteController(ClienteService clienteService, ClienteMapper clienteMapper,
+    public ClienteController(GlobalService globalService, ClienteMapper clienteMapper,
             ClienteRepository clienteRepository) {
-        this.clienteService = clienteService;
+        this.globalService = globalService;
         this.clienteMapper = clienteMapper;
         this.clienteRepository = clienteRepository;
     }
 
     @GetMapping("/{clienteId}")
     public ResponseEntity<ClienteComEmprestimosDto> getClienteComEmprestimos(@PathVariable Long clienteId) {
-        ClienteModelo cliente = clienteService.findById(clienteId);
+        ClienteModelo cliente = globalService.encontrarEntidadePorId(clienteRepository, clienteId,
+                "Cliente nao encontrado ou nao cadastrado");
 
         if (cliente != null) {
-            ClienteComEmprestimosDto clienteDto = clienteMapper.toDto(cliente);
+            ClienteComEmprestimosDto clienteDto = clienteMapper.toClienteComEmprestimosDto(cliente);
 
             return ResponseEntity.ok(clienteDto);
         } else {
@@ -45,12 +52,14 @@ public class ClienteController {
     }
 
     @PostMapping
-    public ResponseEntity<ClienteModelo> cadastrCliente(ClienteModelo clienteModelo) {
+    public ResponseEntity<ClienteModelo> cadastraCliente( ClienteDTO clienteDTO) {
+
+        ClienteModelo clienteModelo = clienteMapper.toClienteModelo(clienteDTO);
         if (clienteModelo == null) {
-            throw new IllegalArgumentException("cliente não pode ser nulo");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
-        ClienteModelo cliente = clienteRepository.save(clienteModelo);
-        return ResponseEntity.ok(cliente);
+        ClienteModelo savedClienteModelo = clienteRepository.save(clienteModelo);
+        return ResponseEntity.ok(savedClienteModelo);
     }
 
     @DeleteMapping

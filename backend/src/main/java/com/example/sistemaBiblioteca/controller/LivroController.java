@@ -24,7 +24,7 @@ import java.nio.file.StandardCopyOption;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/biblioteca")
+@RequestMapping("/livro")
 public class LivroController {
 
     private final LivroRepository livroRepository;
@@ -46,9 +46,7 @@ public class LivroController {
     @PostMapping
     public ResponseEntity<?> cadastraLivro(LivroModelo livroModelo, @RequestPart("imagem") MultipartFile imagem) {
         try {
-            if (livroModelo == null) {
-                throw new IllegalArgumentException("ID não pode ser nulo");
-            }
+            
 
             livroRepository.save(livroModelo);
             livroModelo.setImagemDoLivro(livroModelo.getLivroId() + ".jpg");

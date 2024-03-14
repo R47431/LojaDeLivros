@@ -33,4 +33,32 @@ public class LivroModelo {
     private String editora;
     private String genero;
     private String sinopse;
+
+    
+    public LivroModelo(Long livroId, String imagemDoLivro, String titulo, String nomeDoAutor, String nacionalidade,
+            LocalDate data, String editora, String genero, String sinopse) {
+        this.livroId = livroId;
+        this.imagemDoLivro = imagemDoLivro;
+        this.titulo = titulo;
+        this.nomeDoAutor = nomeDoAutor;
+        this.nacionalidade = nacionalidade;
+        this.data = data;
+        this.editora = editora;
+        this.genero = genero;
+        this.sinopse = sinopse;
+    }
+
+
+    public LivroModelo(Long livroId) {
+        this.livroId = livroId;
+    }
+
+
+    public LivroModelo() {
+    }
+
+    
+
+    
+    
 }
