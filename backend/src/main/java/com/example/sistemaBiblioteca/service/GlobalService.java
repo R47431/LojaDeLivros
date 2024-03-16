@@ -3,15 +3,10 @@ package com.example.sistemaBiblioteca.service;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
-import org.thymeleaf.standard.expression.NotEqualsExpression;
 
 import com.example.sistemaBiblioteca.exception.NullPointerException;
 import com.example.sistemaBiblioteca.exception.NoEqualsException;
-
-
 import com.example.sistemaBiblioteca.exception.NotFoundException;
 
 @Service

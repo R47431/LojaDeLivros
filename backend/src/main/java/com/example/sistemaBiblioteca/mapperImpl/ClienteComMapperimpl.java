@@ -10,13 +10,13 @@ import com.example.sistemaBiblioteca.dto.ClienteComEmprestimosDto;
 import com.example.sistemaBiblioteca.dto.ClienteDTO;
 import com.example.sistemaBiblioteca.dto.EmprestimoComLivroDto;
 import com.example.sistemaBiblioteca.dto.LivroDto;
-import com.example.sistemaBiblioteca.mapper.ClienteMapper;
+import com.example.sistemaBiblioteca.mapper.ClientMapper;
 import com.example.sistemaBiblioteca.model.ClienteModelo;
 import com.example.sistemaBiblioteca.model.EmprestimoModelo;
 import com.example.sistemaBiblioteca.model.LivroModelo;
 
 @Component
-public class ClienteComMapperimpl implements ClienteMapper {
+public class ClienteComMapperimpl implements ClientMapper {
     @Override
     public ClienteComEmprestimosDto toClienteComEmprestimosDto(ClienteModelo clienteModelo) {
         if (clienteModelo == null) {

@@ -15,7 +15,7 @@ import com.example.sistemaBiblioteca.repository.ClienteRepository;
 import com.example.sistemaBiblioteca.service.GlobalService;
 import com.example.sistemaBiblioteca.dto.ClienteComEmprestimosDto;
 import com.example.sistemaBiblioteca.dto.ClienteDTO;
-import com.example.sistemaBiblioteca.mapper.ClienteMapper;
+import com.example.sistemaBiblioteca.mapper.ClientMapper;
 
 @RestController
 @RequestMapping("/clientes")
@@ -23,12 +23,10 @@ public class ClienteController {
 
     private final ClienteRepository clienteRepository;
     private final GlobalService globalService;
-    private final ClienteMapper clienteMapper;
-  
-
+    private final ClientMapper clienteMapper;
 
     @Autowired
-    public ClienteController(GlobalService globalService, ClienteMapper clienteMapper,
+    public ClienteController(GlobalService globalService, ClientMapper clienteMapper,
             ClienteRepository clienteRepository) {
         this.globalService = globalService;
         this.clienteMapper = clienteMapper;
@@ -48,7 +46,7 @@ public class ClienteController {
             return ResponseEntity.notFound().build();
         }
     }
-
+ 
     @PostMapping
     public ResponseEntity<ClienteModelo> cadastraCliente(ClienteDTO clienteDTO) {
 

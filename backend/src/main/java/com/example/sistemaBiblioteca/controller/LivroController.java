@@ -9,12 +9,16 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.example.sistemaBiblioteca.dto.LivroDto;
+import com.example.sistemaBiblioteca.exception.NotFoundException;
+import com.example.sistemaBiblioteca.exception.NullPointerException;
+import com.example.sistemaBiblioteca.mapper.LivroMapper;
 import com.example.sistemaBiblioteca.model.LivroModelo;
 import com.example.sistemaBiblioteca.repository.LivroRepository;
+import com.example.sistemaBiblioteca.service.GlobalService;
 import com.example.sistemaBiblioteca.service.LivroService;
 
 import java.io.File;
@@ -28,35 +32,63 @@ import java.util.Optional;
 public class LivroController {
 
     private final LivroRepository livroRepository;
+    private final LivroMapper livroMapper;
+    private final GlobalService globalService;
 
     @Autowired
     private LivroService livroService;
 
     @Autowired
-    public LivroController(LivroRepository livroRepository) {
+    public LivroController(LivroRepository livroRepository, GlobalService globalService, LivroMapper livroMapper) {
         this.livroRepository = livroRepository;
+        this.livroMapper = livroMapper;
+        this.globalService = globalService;
     }
 
     @GetMapping("/lista")
-    public Iterable<LivroModelo> listaLivro(
-            LivroModelo livroModelo) {
+    public Iterable<LivroModelo> listaLivro(LivroModelo livroModelo) {
         return livroRepository.findAll();
     }
 
-    @PostMapping
-    public ResponseEntity<?> cadastraLivro(LivroModelo livroModelo, @RequestPart("imagem") MultipartFile imagem) {
+    @GetMapping("/{livroId}")
+    public ResponseEntity<LivroDto> listaLivro(@PathVariable Long livroId) {
         try {
-            
+            LivroModelo livro = globalService.encontrarEntidadePorId(livroRepository, livroId,
+                    "Livro nao encontrado ou nao cadastrado");
 
+            LivroDto livroModelo = livroMapper.toLivroDto(livro);
+            return ResponseEntity.ok(livroModelo);
+
+        } catch (NotFoundException e) {
+            throw new NotFoundException("Livro nao encontrado ou nao cadastrado");
+        } catch (NullPointerException e) {
+            throw new NullPointerException("Livro null");
+        }
+
+    }
+
+    @PostMapping
+    public ResponseEntity<?> cadastraLivro(LivroModelo livroModelo, MultipartFile imagem) {
+        try {
+            if (imagem == null || imagem.isEmpty()) {
+                return ResponseEntity.badRequest().body("seleciona imagem");
+
+            }
+            
+          
             livroRepository.save(livroModelo);
             livroModelo.setImagemDoLivro(livroModelo.getLivroId() + ".jpg");
             String diretorio = livroService.diretorioDaImagem(livroModelo);
+
             Files.copy(imagem.getInputStream(), Paths.get(diretorio), StandardCopyOption.REPLACE_EXISTING);
             livroRepository.save(livroModelo);
 
             return ResponseEntity.ok(livroModelo);
 
-        } catch (Exception e) {
+        } catch (NullPointerException e){
+            throw new NullPointerException("Entidade null");
+
+        }catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Ocorreu um erro ao processar o Cadastro." + e.getMessage());
         }

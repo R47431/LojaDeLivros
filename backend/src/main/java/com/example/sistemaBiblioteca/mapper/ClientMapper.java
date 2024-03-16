@@ -7,13 +7,14 @@ import com.example.sistemaBiblioteca.dto.ClienteDTO;
 import com.example.sistemaBiblioteca.model.ClienteModelo;
 
 
-public interface ClienteMapper {
+public interface ClientMapper {
 
     ClienteComEmprestimosDto toClienteComEmprestimosDto(ClienteModelo clienteModelo);
 
     ClienteDTO toClienteDTO (ClienteModelo clienteModelo);
 
     ClienteModelo toClienteModelo (ClienteDTO clienteDTO);
+
 
 
 

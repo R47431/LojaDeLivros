@@ -13,14 +13,10 @@ import com.example.sistemaBiblioteca.exception.NullPointerException;
 import com.example.sistemaBiblioteca.model.ClienteModelo;
 import com.example.sistemaBiblioteca.repository.ClienteRepository;
 import com.example.sistemaBiblioteca.repository.EmprestimosRepository;
-import com.example.sistemaBiblioteca.service.EmprestimoService;
 import com.example.sistemaBiblioteca.service.GlobalService;
-import com.example.sistemaBiblioteca.dto.ObterClienteDTO;
-import com.example.sistemaBiblioteca.dto.ObterLivroDTO;
-import com.example.sistemaBiblioteca.dto.PedirEmprestimoDTO;
+
 import com.example.sistemaBiblioteca.exception.NoEqualsException;
 import com.example.sistemaBiblioteca.exception.NotFoundException;
-import com.example.sistemaBiblioteca.mapper.EmprestimoMapper;
 import com.example.sistemaBiblioteca.model.EmprestimoModelo;
 import com.example.sistemaBiblioteca.model.LivroModelo;
 
@@ -35,17 +31,15 @@ public class EmprestimoController {
     private final EmprestimosRepository emprestimosRepository;
     private final LivroRepository livroRepository;
     private final ClienteRepository clienteRepository;
-    private final EmprestimoMapper emprestimoMapper;
 
     private final GlobalService globalService;
 
     @Autowired
     public EmprestimoController(EmprestimosRepository emprestimosRepository, LivroRepository livroRepository,
-            ClienteRepository clienteRepository, EmprestimoMapper emprestimoMapper, GlobalService globalService) {
+            ClienteRepository clienteRepository, GlobalService globalService) {
         this.emprestimosRepository = emprestimosRepository;
         this.livroRepository = livroRepository;
         this.clienteRepository = clienteRepository;
-        this.emprestimoMapper = emprestimoMapper;
         this.globalService = globalService;
 
     }
@@ -78,11 +72,9 @@ public class EmprestimoController {
             @PathVariable Long emprestimoId) {
         try {
 
-            ClienteModelo cliente = globalService.encontrarEntidadePorId(clienteRepository, clienteId,
-                    "Cliente Not Found");
+            ClienteModelo cliente = globalService.encontrarEntidadePorId(clienteRepository, clienteId,"Cliente Not Found");
             LivroModelo livro = globalService.encontrarEntidadePorId(livroRepository, livroId, "Livro Not Found");
-            EmprestimoModelo emprestimo = globalService.encontrarEntidadePorId(emprestimosRepository, emprestimoId,
-                    "Empréstimo Not Found");
+            EmprestimoModelo emprestimo = globalService.encontrarEntidadePorId(emprestimosRepository, emprestimoId,"Empréstimo Not Found");
 
             globalService.verificarNull(emprestimo.getDataDevolucao(), "Livro já foi devolvido anteriormente.");
             globalService.verificarIgualdade(emprestimo.getCliente(), cliente);
