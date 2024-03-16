@@ -57,7 +57,6 @@ public class EmprestimoController {
             ClienteModelo clienteOptional = globalService.encontrarEntidadePorId(clienteRepository, clienteId, "Cliente Not Found");
             LivroModelo livroOptional = globalService.encontrarEntidadePorId(livroRepository, livroId, "Livro Not Found ");
 
-        
             EmprestimoModelo emprestimoModelo = new EmprestimoModelo(clienteOptional, livroOptional, LocalDate.now());
 
             EmprestimoModelo emprestimo = emprestimosRepository.save(emprestimoModelo);
