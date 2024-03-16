@@ -23,17 +23,17 @@ public class EmprestimoMapperImpl implements EmprestimoMapper {
         LocalDate dataEmprestimo = pedirEmprestimoDTO.dataEmprestimo();
 
         ObterLivroDTO livroDto = pedirEmprestimoDTO.obterLivroDTO();
-        LivroModelo livroModelo = toLivroModelo(livroDto);
+        LivroModelo livroModelo = toIDLivroModelo(livroDto);
 
         ObterClienteDTO clienteDTO = pedirEmprestimoDTO.obterClienteDTO();
-        ClienteModelo clienteModelo = toClienteModelo(clienteDTO);
+        ClienteModelo clienteModelo = toIDClienteModelo(clienteDTO);
 
         EmprestimoModelo emprestimoModelo = new EmprestimoModelo( clienteModelo, livroModelo,
                 dataEmprestimo);
         return emprestimoModelo;
     }
 
-    public ObterLivroDTO toLivroDto(LivroModelo livroModelo) {
+    public ObterLivroDTO toIDLivroDto(LivroModelo livroModelo) {
         if (livroModelo == null) {
             return null;
         }
@@ -43,7 +43,7 @@ public class EmprestimoMapperImpl implements EmprestimoMapper {
         return obterLivroDTO;
     }
 
-    protected LivroModelo toLivroModelo(ObterLivroDTO obterLivroDTO) {
+    protected LivroModelo toIDLivroModelo(ObterLivroDTO obterLivroDTO) {
         if (obterLivroDTO == null) {
             return null;
         }
@@ -53,7 +53,7 @@ public class EmprestimoMapperImpl implements EmprestimoMapper {
         return livroModelo;
     }
 
-    protected ClienteModelo toClienteModelo(ObterClienteDTO obterClienteDTO) {
+    protected ClienteModelo toIDClienteModelo(ObterClienteDTO obterClienteDTO) {
         if (obterClienteDTO == null) {
             return null;
         }
@@ -63,7 +63,7 @@ public class EmprestimoMapperImpl implements EmprestimoMapper {
         return clienteModelo;
     }
 
-    public ObterClienteDTO toClienteDTO(ClienteModelo clienteModelo) {
+    public ObterClienteDTO toIDClienteDTO(ClienteModelo clienteModelo) {
         if (clienteModelo == null) {
             return null;
         }
@@ -72,5 +72,6 @@ public class EmprestimoMapperImpl implements EmprestimoMapper {
         ObterClienteDTO obterClienteDTO = new ObterClienteDTO(clienteId);
         return obterClienteDTO;
     }
+
 
 }

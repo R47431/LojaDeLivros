@@ -8,7 +8,7 @@ import { LivroModelo } from '../model/LivroModelo';
 })
 export class LivroService {
 
-  private url: string = "http://localhost:8080/biblioteca";
+  private url: string = "http://localhost:8080/sistemaBiblioteca-0.0.1/livro";
 
   constructor(private http: HttpClient) { }
 

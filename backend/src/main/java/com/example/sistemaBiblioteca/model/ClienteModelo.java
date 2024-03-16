@@ -47,6 +47,22 @@ public class ClienteModelo {
     @OneToMany(mappedBy = "cliente")
     private List<EmprestimoModelo> emprestimos;
 
+    
+
+    public ClienteModelo(Long clienteId,
+            @NotNull(message = "NOME NAO PODE SER NULL") @NotEmpty(message = "NOME NAO PODE SER VAZIO") String nome,
+            @Past(message = "DATA DE NASCIMENTO DEVE SER NO PASSADO") @NotNull(message = "NASCIMENTO NAO PODE SER NULL") @NotEmpty(message = "NASCIMENTO NAO PODE SER VAZIO") LocalDate dataDeNascimento,
+            @Pattern(regexp = "^\\+?[1-9]\\d{1,14}$", message = "NUMERO DE TELEFONE INVALIDO") @NotNull(message = "TELEFONE NAO PODE SER NULL") @NotEmpty(message = "TELEFONE NAO PODE SER VAZIO") Integer numeroDeTelefone,
+            @Email(message = "EMAIL INVALIDO") @NotNull(message = "EMAIL NAO PODE SER NULL") @NotEmpty(message = "EMAIL NAO PODE SER VAZIO") String email,
+            List<EmprestimoModelo> emprestimos) {
+        this.clienteId = clienteId;
+        this.nome = nome;
+        this.dataDeNascimento = dataDeNascimento;
+        this.numeroDeTelefone = numeroDeTelefone;
+        this.email = email;
+        this.emprestimos = emprestimos;
+    }
+
 
     public ClienteModelo(Long clienteId, String nome, LocalDate dataDeNascimento, Integer numeroDeTelefone, String email) {
         this.clienteId = clienteId;
@@ -64,6 +80,7 @@ public class ClienteModelo {
 
     public ClienteModelo() {
     }
+
 
     
     

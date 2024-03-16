@@ -1,7 +1,5 @@
 package com.example.sistemaBiblioteca.controller;
 
-import javax.validation.constraints.NotNull;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -52,7 +50,7 @@ public class ClienteController {
     }
 
     @PostMapping
-    public ResponseEntity<ClienteModelo> cadastraCliente( ClienteDTO clienteDTO) {
+    public ResponseEntity<ClienteModelo> cadastraCliente(ClienteDTO clienteDTO) {
 
         ClienteModelo clienteModelo = clienteMapper.toClienteModelo(clienteDTO);
         if (clienteModelo == null) {

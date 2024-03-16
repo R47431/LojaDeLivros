@@ -13,7 +13,7 @@ public interface EmprestimoMapper {
 
   EmprestimoModelo toEmprestimoModelo (PedirEmprestimoDTO pedirEmprestimoDTO);
 
-  ObterClienteDTO toClienteDTO (ClienteModelo clienteModelo);
-  ObterLivroDTO toLivroDto (LivroModelo livroModelo);
+  ObterClienteDTO toIDClienteDTO (ClienteModelo clienteModelo);
+  ObterLivroDTO toIDLivroDto (LivroModelo livroModelo);
   
 }

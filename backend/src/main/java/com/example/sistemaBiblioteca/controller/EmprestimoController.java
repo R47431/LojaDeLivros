@@ -8,18 +8,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import com.example.sistemaBiblioteca.exception.NullPointerException;
 
 import com.example.sistemaBiblioteca.model.ClienteModelo;
 import com.example.sistemaBiblioteca.repository.ClienteRepository;
 import com.example.sistemaBiblioteca.repository.EmprestimosRepository;
+import com.example.sistemaBiblioteca.service.EmprestimoService;
 import com.example.sistemaBiblioteca.service.GlobalService;
-import com.example.sistemaBiblioteca.dto.ClienteDTO;
-import com.example.sistemaBiblioteca.dto.LivroDto;
 import com.example.sistemaBiblioteca.dto.ObterClienteDTO;
 import com.example.sistemaBiblioteca.dto.ObterLivroDTO;
 import com.example.sistemaBiblioteca.dto.PedirEmprestimoDTO;
-import com.example.sistemaBiblioteca.exception.EntityNotFoundException;
-import com.example.sistemaBiblioteca.mapper.ClienteMapper;
+import com.example.sistemaBiblioteca.exception.NoEqualsException;
+import com.example.sistemaBiblioteca.exception.NotFoundException;
 import com.example.sistemaBiblioteca.mapper.EmprestimoMapper;
 import com.example.sistemaBiblioteca.model.EmprestimoModelo;
 import com.example.sistemaBiblioteca.model.LivroModelo;
@@ -41,13 +41,13 @@ public class EmprestimoController {
 
     @Autowired
     public EmprestimoController(EmprestimosRepository emprestimosRepository, LivroRepository livroRepository,
-            ClienteRepository clienteRepository,EmprestimoMapper emprestimoMapper, GlobalService globalService) {
+            ClienteRepository clienteRepository, EmprestimoMapper emprestimoMapper, GlobalService globalService) {
         this.emprestimosRepository = emprestimosRepository;
         this.livroRepository = livroRepository;
         this.clienteRepository = clienteRepository;
         this.emprestimoMapper = emprestimoMapper;
         this.globalService = globalService;
-        
+
     }
 
     @PostMapping("/{clienteId}/{livroId}")
@@ -55,25 +55,20 @@ public class EmprestimoController {
         try {
 
             ClienteModelo clienteOptional = globalService.encontrarEntidadePorId(clienteRepository, clienteId, "Cliente Not Found");
-            LivroModelo livroOptional = globalService.encontrarEntidadePorId(livroRepository, livroId, "Livro Not Found"); 
+            LivroModelo livroOptional = globalService.encontrarEntidadePorId(livroRepository, livroId, "Livro Not Found ");
 
-            ObterClienteDTO clienteDTO = emprestimoMapper.toClienteDTO(clienteOptional);
-            ObterLivroDTO livroDTO = emprestimoMapper.toLivroDto(livroOptional);
-
-            PedirEmprestimoDTO emprestimoDTO = new PedirEmprestimoDTO(clienteDTO, livroDTO, LocalDate.now());
-            EmprestimoModelo emprestimoModelo = emprestimoMapper.toEmprestimoModelo(emprestimoDTO);
+        
+            EmprestimoModelo emprestimoModelo = new EmprestimoModelo(clienteOptional, livroOptional, LocalDate.now());
 
             EmprestimoModelo emprestimo = emprestimosRepository.save(emprestimoModelo);
-            LOGGER.info("Empréstimo realizado com sucesso. Cliente ID: {}, Livro ID: {}, Empretimo: {}", clienteId,livroId, emprestimo.getEmprestimoId());
+            LOGGER.info("Empréstimo realizado com sucesso. Cliente ID: {}, Livro ID: {}, Empretimo: {}", clienteId,
+                    livroId, emprestimo.getEmprestimoId());
             return ResponseEntity.status(HttpStatus.CREATED).body("Empréstimo realizado com sucesso");
 
-        } catch (EntityNotFoundException e) {
-            LOGGER.error("Entidade nao NotFound {}",e);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e);
-        } catch (Exception e) {
-            LOGGER.error("Erro ao realizar empréstimo. Cliente ID: {}, Livro ID: {}", clienteId, livroId,
-                    e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        } catch (NotFoundException e) {
+            throw new NotFoundException("Entidade nao Encontrada");
+        }catch (NullPointerException e){
+            throw new NullPointerException("Entidade null");
         }
     }
 
@@ -81,28 +76,30 @@ public class EmprestimoController {
     public ResponseEntity<?> realizarDevolucao(
             @PathVariable Long clienteId,
             @PathVariable Long livroId,
-            @PathVariable Long emprestimoId
-            ) {
+            @PathVariable Long emprestimoId) {
         try {
 
-            ClienteModelo cliente = globalService.encontrarEntidadePorId(clienteRepository, clienteId, "Cliente Not Found");
+            ClienteModelo cliente = globalService.encontrarEntidadePorId(clienteRepository, clienteId,
+                    "Cliente Not Found");
             LivroModelo livro = globalService.encontrarEntidadePorId(livroRepository, livroId, "Livro Not Found");
-            EmprestimoModelo emprestimo = globalService.encontrarEntidadePorId(emprestimosRepository, emprestimoId, "Empréstimo Not Found");
-            
+            EmprestimoModelo emprestimo = globalService.encontrarEntidadePorId(emprestimosRepository, emprestimoId,
+                    "Empréstimo Not Found");
+
             globalService.verificarNull(emprestimo.getDataDevolucao(), "Livro já foi devolvido anteriormente.");
-            globalService.verificarIgualdade(emprestimo.getCliente(), cliente, "Cliente", clienteId);
-            globalService.verificarIgualdade(emprestimo.getLivro(), livro, "Livro", livroId);
+            globalService.verificarIgualdade(emprestimo.getCliente(), cliente);
+            globalService.verificarIgualdade(emprestimo.getLivro(), livro);
 
             emprestimo.setDataDevolucao(LocalDate.now());
             emprestimosRepository.save(emprestimo);
 
             LOGGER.info("Devolução realizada com sucesso. Empréstimo ID: {}", emprestimo.getEmprestimoId());
             return ResponseEntity.ok("Devolução realizada com sucesso. Empréstimo ID: " + emprestimo.getEmprestimoId());
-        } catch (Exception e) {
-            LOGGER.error("Erro ao realizar devolução. Cliente ID: {}, Livro ID: {}, Empréstimo ID: {}", clienteId,
-                    livroId, emprestimoId, e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-
+        } catch (NoEqualsException e) {
+            throw new NoEqualsException("Dados de empréstimo inválidos para devolução.");
+        }catch (NullPointerException e){
+            throw new NullPointerException("Entidade null");
+        }catch (NotFoundException e){
+            throw new NotFoundException("Entidade não encontrada");
         }
     }
 }
