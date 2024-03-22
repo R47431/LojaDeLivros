@@ -58,10 +58,11 @@ public class EmprestimoController {
                     livroId, emprestimo.getEmprestimoId());
             return ResponseEntity.status(HttpStatus.CREATED).body("Empréstimo realizado com sucesso");
 
-        } catch (NotFoundException e) {
-            throw new NotFoundException("Entidade nao Encontrada");
+        
         }catch (NullPointerException e){
             throw new NullPointerException("Entidade null");
+        }catch (NotFoundException e) {
+            throw new NotFoundException("Entidade nao Encontrada");
         }
     }
 
