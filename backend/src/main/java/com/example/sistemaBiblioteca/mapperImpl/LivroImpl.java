@@ -9,10 +9,10 @@ import com.example.sistemaBiblioteca.mapper.LivroMapper;
 import com.example.sistemaBiblioteca.model.LivroModelo;
 
 @Component
-public class LivroImpl implements LivroMapper{
-    
+public class LivroImpl implements LivroMapper {
 
-     public LivroDto toLivroDto(LivroModelo livroModelo) {
+    @Override
+    public LivroDto toLivroDto(LivroModelo livroModelo) {
         if (livroModelo == null) {
             return null;
         }
@@ -33,6 +33,7 @@ public class LivroImpl implements LivroMapper{
         return livroDto;
     }
 
+    @Override
     public LivroModelo toLivroModelo(LivroDto livroDto) {
         if (livroDto == null) {
             return null;
@@ -48,12 +49,11 @@ public class LivroImpl implements LivroMapper{
         String genero = livroDto.genero();
         String sinopse = livroDto.sinopse();
 
-        LivroModelo livroModelo = new LivroModelo(livroId, imagemDoLivro, titulo, nomeDoAutor, nacionalidade, data, editora,
+        LivroModelo livroModelo = new LivroModelo(livroId, imagemDoLivro, titulo, nomeDoAutor, nacionalidade, data,
+                editora,
                 genero, sinopse);
 
         return livroModelo;
     }
-
-  
 
 }

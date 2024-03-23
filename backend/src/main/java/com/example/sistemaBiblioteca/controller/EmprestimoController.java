@@ -8,15 +8,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import com.example.sistemaBiblioteca.exception.NullPointerException;
 
 import com.example.sistemaBiblioteca.model.ClienteModelo;
 import com.example.sistemaBiblioteca.repository.ClienteRepository;
 import com.example.sistemaBiblioteca.repository.EmprestimosRepository;
 import com.example.sistemaBiblioteca.service.GlobalService;
 
+import com.example.sistemaBiblioteca.exception.NullPointerException;
 import com.example.sistemaBiblioteca.exception.NoEqualsException;
-import com.example.sistemaBiblioteca.exception.NotFoundException;
 import com.example.sistemaBiblioteca.model.EmprestimoModelo;
 import com.example.sistemaBiblioteca.model.LivroModelo;
 
@@ -48,8 +47,10 @@ public class EmprestimoController {
     public ResponseEntity<?> realizarEmprestimo(@PathVariable Long clienteId, @PathVariable Long livroId) {
         try {
 
-            ClienteModelo clienteOptional = globalService.encontrarEntidadePorId(clienteRepository, clienteId, "Cliente Not Found");
-            LivroModelo livroOptional = globalService.encontrarEntidadePorId(livroRepository, livroId, "Livro Not Found ");
+            ClienteModelo clienteOptional = globalService.encontrarEntidadePorId(clienteRepository, clienteId,
+                    "Cliente Not Found");
+            LivroModelo livroOptional = globalService.encontrarEntidadePorId(livroRepository, livroId,
+                    "Livro Not Found ");
 
             EmprestimoModelo emprestimoModelo = new EmprestimoModelo(clienteOptional, livroOptional, LocalDate.now());
 
@@ -58,11 +59,8 @@ public class EmprestimoController {
                     livroId, emprestimo.getEmprestimoId());
             return ResponseEntity.status(HttpStatus.CREATED).body("Empréstimo realizado com sucesso");
 
-        
-        }catch (NullPointerException e){
+        } catch (NullPointerException e) {
             throw new NullPointerException("Entidade null");
-        }catch (NotFoundException e) {
-            throw new NotFoundException("Entidade nao Encontrada");
         }
     }
 
@@ -72,12 +70,13 @@ public class EmprestimoController {
             @PathVariable Long livroId,
             @PathVariable Long emprestimoId) {
         try {
-
-            ClienteModelo cliente = globalService.encontrarEntidadePorId(clienteRepository, clienteId,"Cliente Not Found");
+            ClienteModelo cliente = globalService.encontrarEntidadePorId(clienteRepository, clienteId,
+                    "Cliente Not Found");
             LivroModelo livro = globalService.encontrarEntidadePorId(livroRepository, livroId, "Livro Not Found");
-            EmprestimoModelo emprestimo = globalService.encontrarEntidadePorId(emprestimosRepository, emprestimoId,"Empréstimo Not Found");
+            EmprestimoModelo emprestimo = globalService.encontrarEntidadePorId(emprestimosRepository, emprestimoId,
+                    "Empréstimo Not Found");
 
-            globalService.verificarNull(emprestimo.getDataDevolucao(), "Livro já foi devolvido anteriormente.");
+            globalService.verificarNull(emprestimo.getDataDevolucao());
             globalService.verificarIgualdade(emprestimo.getCliente(), cliente);
             globalService.verificarIgualdade(emprestimo.getLivro(), livro);
 
@@ -85,13 +84,12 @@ public class EmprestimoController {
             emprestimosRepository.save(emprestimo);
 
             LOGGER.info("Devolução realizada com sucesso. Empréstimo ID: {}", emprestimo.getEmprestimoId());
-            return ResponseEntity.ok("Devolução realizada com sucesso. Empréstimo ID: " + emprestimo.getEmprestimoId());
+            return ResponseEntity
+                    .ok("Devolução realizada com sucesso. Empréstimo ID: {}" + emprestimo.getEmprestimoId());
         } catch (NoEqualsException e) {
             throw new NoEqualsException("Dados de empréstimo inválidos para devolução.");
-        }catch (NullPointerException e){
+        } catch (NullPointerException e) {
             throw new NullPointerException("Entidade null");
-        }catch (NotFoundException e){
-            throw new NotFoundException("Entidade não encontrada");
         }
     }
 }

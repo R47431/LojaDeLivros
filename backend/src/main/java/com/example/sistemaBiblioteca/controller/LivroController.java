@@ -9,12 +9,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.sistemaBiblioteca.dto.LivroDto;
 import com.example.sistemaBiblioteca.exception.NotFoundException;
-import com.example.sistemaBiblioteca.exception.NullPointerException;
 import com.example.sistemaBiblioteca.mapper.LivroMapper;
 import com.example.sistemaBiblioteca.model.LivroModelo;
 import com.example.sistemaBiblioteca.repository.LivroRepository;
@@ -34,19 +34,18 @@ public class LivroController {
     private final LivroRepository livroRepository;
     private final LivroMapper livroMapper;
     private final GlobalService globalService;
+    private final LivroService livroService;
 
     @Autowired
-    private LivroService livroService;
-
-    @Autowired
-    public LivroController(LivroRepository livroRepository, GlobalService globalService, LivroMapper livroMapper) {
+    public LivroController(LivroRepository livroRepository, GlobalService globalService, LivroMapper livroMapper, LivroService livroService) {
         this.livroRepository = livroRepository;
         this.livroMapper = livroMapper;
         this.globalService = globalService;
+        this.livroService = livroService;
     }
 
     @GetMapping("/lista")
-    public Iterable<LivroModelo> listaLivro(LivroModelo livroModelo) {
+    public Iterable<LivroModelo> listaLivro() {
         return livroRepository.findAll();
     }
 
@@ -55,7 +54,6 @@ public class LivroController {
         try {
             LivroModelo livro = globalService.encontrarEntidadePorId(livroRepository, livroId,
                     "Livro nao encontrado ou nao cadastrado");
-
             LivroDto livroModelo = livroMapper.toLivroDto(livro);
             return ResponseEntity.ok(livroModelo);
 
@@ -64,18 +62,16 @@ public class LivroController {
         } catch (NullPointerException e) {
             throw new NullPointerException("Livro null");
         }
-
     }
 
     @PostMapping
-    public ResponseEntity<?> cadastraLivro(LivroModelo livroModelo, MultipartFile imagem) {
+    public ResponseEntity<?> cadastraLivro(LivroDto livroDto, @RequestParam("imagem") MultipartFile imagem) {
         try {
+            LivroModelo livroModelo = livroMapper.toLivroModelo(livroDto);
             if (imagem == null || imagem.isEmpty()) {
                 return ResponseEntity.badRequest().body("seleciona imagem");
 
             }
-            
-          
             livroRepository.save(livroModelo);
             livroModelo.setImagemDoLivro(livroModelo.getLivroId() + ".jpg");
             String diretorio = livroService.diretorioDaImagem(livroModelo);
@@ -95,8 +91,10 @@ public class LivroController {
     }
 
     @PutMapping
-    public ResponseEntity<?> alteraLivro(LivroModelo livroModelo, MultipartFile imagem) {
+    public ResponseEntity<?> alteraLivro(LivroDto livroDto, MultipartFile imagem) {
         try {
+            LivroModelo livroModelo = livroMapper.toLivroModelo(livroDto);
+
             if (livroModelo == null) {
                 throw new IllegalArgumentException("LivroModelo não pode ser nulo");
             }

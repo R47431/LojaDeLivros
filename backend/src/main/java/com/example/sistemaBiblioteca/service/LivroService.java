@@ -17,12 +17,10 @@ public class LivroService {
     private String imgdir;
 
     public String diretorioDaImagem(LivroModelo livroModelo) {
-       
         String nomeImagem = livroModelo.getLivroId() + ".jpg";
         if (nomeImagem.equals("null")) {
             throw new NotFoundException("");
         }
         return imgdir + File.separator + nomeImagem;
     }
-
 }

@@ -34,7 +34,7 @@ public class ClienteController {
     }
 
     @GetMapping("/{clienteId}")
-    public ResponseEntity<ClienteComEmprestimosDto> getClienteComEmprestimos(@PathVariable Long clienteId) {
+    public ResponseEntity<?> getClienteComEmprestimos(@PathVariable Long clienteId) {
         ClienteModelo cliente = globalService.encontrarEntidadePorId(clienteRepository, clienteId,
                 "Cliente nao encontrado ou nao cadastrado");
 
@@ -48,7 +48,7 @@ public class ClienteController {
     }
  
     @PostMapping
-    public ResponseEntity<ClienteModelo> cadastraCliente(ClienteDTO clienteDTO) {
+    public ResponseEntity<?> cadastraCliente(ClienteDTO clienteDTO) {
 
         ClienteModelo clienteModelo = clienteMapper.toClienteModelo(clienteDTO);
         if (clienteModelo == null) {

@@ -5,7 +5,8 @@ import com.example.sistemaBiblioteca.model.LivroModelo;
 
 public interface LivroMapper {
 
-    LivroDto toLivroDto (LivroModelo livroModelo);
+    LivroDto toLivroDto(LivroModelo livroModelo);
 
-    
-} 
+    LivroModelo toLivroModelo(LivroDto livroDto);
+
+}
