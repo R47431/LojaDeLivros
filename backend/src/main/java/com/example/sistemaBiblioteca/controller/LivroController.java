@@ -1,5 +1,7 @@
 package com.example.sistemaBiblioteca.controller;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +32,8 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/livro")
 public class LivroController {
+    //TODO fazer melhora de codigo validadores no service
+    private static final Logger LOGGER = LoggerFactory.getLogger(LivroService.class);
 
     private final LivroRepository livroRepository;
     private final LivroMapper livroMapper;
@@ -37,7 +41,8 @@ public class LivroController {
     private final LivroService livroService;
 
     @Autowired
-    public LivroController(LivroRepository livroRepository, GlobalService globalService, LivroMapper livroMapper, LivroService livroService) {
+    public LivroController(LivroRepository livroRepository, GlobalService globalService, LivroMapper livroMapper,
+            LivroService livroService) {
         this.livroRepository = livroRepository;
         this.livroMapper = livroMapper;
         this.globalService = globalService;
@@ -50,18 +55,16 @@ public class LivroController {
     }
 
     @GetMapping("/{livroId}")
-    public ResponseEntity<LivroDto> listaLivro(@PathVariable Long livroId) {
+    public ResponseEntity<?> listaLivro(@PathVariable Long livroId) {
         try {
-            LivroModelo livro = globalService.encontrarEntidadePorId(livroRepository, livroId,
-                    "Livro nao encontrado ou nao cadastrado");
-            LivroDto livroModelo = livroMapper.toLivroDto(livro);
-            return ResponseEntity.ok(livroModelo);
+            LivroDto livroDto = livroService.verLivro(livroId);
+            return ResponseEntity.ok(livroDto);
+        } catch (IllegalArgumentException e) {
+            LOGGER.error(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
 
-        } catch (NotFoundException e) {
-            throw new NotFoundException("Livro nao encontrado ou nao cadastrado");
-        } catch (NullPointerException e) {
-            throw new NullPointerException("Livro null");
         }
+
     }
 
     @PostMapping
@@ -79,35 +82,44 @@ public class LivroController {
             Files.copy(imagem.getInputStream(), Paths.get(diretorio), StandardCopyOption.REPLACE_EXISTING);
             livroRepository.save(livroModelo);
 
-            return ResponseEntity.ok(livroModelo);
+            return ResponseEntity.status(HttpStatus.CREATED).body(livroModelo);
 
-        } catch (NullPointerException e){
+        } catch (NullPointerException e) {
             throw new NullPointerException("Entidade null");
 
-        }catch (Exception e) {
+        } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Ocorreu um erro ao processar o Cadastro." + e.getMessage());
         }
     }
 
-    @PutMapping
-    public ResponseEntity<?> alteraLivro(LivroDto livroDto, MultipartFile imagem) {
+    @PutMapping("/{livroId}")
+    public ResponseEntity<?> alteraLivro(@PathVariable Long livroId, LivroDto livroDto,
+            MultipartFile imagem) {
         try {
+
+            LivroModelo livroExistente = livroRepository.findById(livroId)
+                    .orElseThrow(() -> new RuntimeException("Livro não encontrado"));
+
             LivroModelo livroModelo = livroMapper.toLivroModelo(livroDto);
 
             if (livroModelo == null) {
                 throw new IllegalArgumentException("LivroModelo não pode ser nulo");
             }
+
+            if (imagem != null && !imagem.isEmpty()) {
+                livroModelo.setImagemDoLivro(livroModelo.getLivroId() + ".jpg");
+                String diretorio = livroService.diretorioDaImagem(livroModelo);
+                Files.copy(imagem.getInputStream(), Paths.get(diretorio), StandardCopyOption.REPLACE_EXISTING);
+            } else {
+                livroModelo.setImagemDoLivro(livroExistente.getImagemDoLivro());
+            }
+
             livroRepository.save(livroModelo);
-            livroModelo.setImagemDoLivro(livroModelo.getLivroId() + ".jpg");
-            String diretorio = livroService.diretorioDaImagem(livroModelo);
-            Files.copy(imagem.getInputStream(), Paths.get(diretorio), StandardCopyOption.REPLACE_EXISTING);
-            livroRepository.save(livroModelo);
-            new ResponseEntity<>(HttpStatus.ACCEPTED);
             return ResponseEntity.ok(livroModelo);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Ocorreu um erro ao processar o Alteracao.");
+                    .body("Ocorreu um erro ao processar a alteração.");
         }
     }
 
