@@ -9,4 +9,6 @@ public record EmprestimoComLivroDto(
             LivroDto livro
 
 ) {
+
+    //TODO como fazer dto
 }

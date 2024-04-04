@@ -1,4 +1,4 @@
-package com.example.sistemaBiblioteca.service;
+package com.example.sistemaBiblioteca.global;
 
 import java.util.Optional;
 
@@ -7,9 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 
-import com.example.sistemaBiblioteca.exception.NoEqualsException;
-import com.example.sistemaBiblioteca.exception.NotFoundException;
-import com.example.sistemaBiblioteca.exception.NullPointerException;
+import com.example.sistemaBiblioteca.exception.NotEqualsException;
 
 
 @Service
@@ -23,7 +21,7 @@ public class GlobalService {
         Optional<T> entidadeOptional = repositorio.findById(id);
         if (!entidadeOptional.isPresent()) {
             LOGGER.warn("Entidade não encontrada: {}", messagem);
-            throw new NotFoundException("" + messagem);
+            
 
         }
         return entidadeOptional.get();
@@ -31,7 +29,7 @@ public class GlobalService {
 
     public <T> void verificarIgualdade(T valorEntidade, T valorComparacao) {
         if (!valorEntidade.equals(valorComparacao)) {
-            throw new NoEqualsException("");
+            throw new NotEqualsException("");
         }
     }
 

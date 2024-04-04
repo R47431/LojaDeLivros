@@ -2,6 +2,8 @@ package com.example.sistemaBiblioteca.model;
 
 import java.time.LocalDate;
 
+import org.springframework.stereotype.Component;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -13,6 +15,7 @@ import jakarta.persistence.TemporalType;
 import lombok.Getter;
 import lombok.Setter;
 
+@Component
 @Getter
 @Setter
 @Entity
@@ -51,6 +54,18 @@ public class LivroModelo {
 
     public LivroModelo(Long livroId) {
         this.livroId = livroId;
+    }
+
+
+    public LivroModelo(Long livroId, String imagemDoLivro, String titulo, String nomeDoAutor, String nacionalidade,
+            LocalDate data, String editora) {
+        this.livroId = livroId;
+        this.imagemDoLivro = imagemDoLivro;
+        this.titulo = titulo;
+        this.nomeDoAutor = nomeDoAutor;
+        this.nacionalidade = nacionalidade;
+        this.data = data;
+        this.editora = editora;
     }
 
 

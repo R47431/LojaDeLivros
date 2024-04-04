@@ -1,25 +1,66 @@
 package com.example.sistemaBiblioteca.exception;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.multipart.support.MissingServletRequestPartException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<?> handleEntityNotFoundException(NotFoundException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Entidade não encontrada");
+    public ResponseEntity<Map<String, String>> handleEntityNotFoundException(NotFoundException ex) {
+        Map<String, String> errorMap = new HashMap<>();
+        errorMap.put("message", "NotFoundException");
+        return new ResponseEntity<>(errorMap, HttpStatus.NOT_FOUND);
     }
+
+    //TODO muda a MESSAGEM DE ERRO
 
     @ExceptionHandler(NullPointerException.class)
-    public ResponseEntity<?> handleEntityNullPointerException(NullPointerException ex){
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Entidade null");
+    public ResponseEntity<Map<String, String>> handleEntityNullPointerException(NullPointerException ex) {
+        Map<String, String> errorMap = new HashMap<>();
+        errorMap.put("message", "NullPointerException");
+        return new ResponseEntity<>(errorMap, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(NoEqualsException.class)
-    public ResponseEntity<?> handleNoEqualsException (NoEqualsException ex){
+
+    @ExceptionHandler(NotEqualsException.class)
+    public ResponseEntity<?> handleNoEqualsException(NotEqualsException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Dados de empréstimo inválidos para devolução.");
+    }
+
+    @ExceptionHandler(MissingServletRequestPartException.class)
+    public ResponseEntity<Map<String, String>> handleMissingServletRequestPartException(
+            MissingServletRequestPartException ex) {
+        Map<String, String> errorMap = new HashMap<>();
+        String partName = ex.getRequestPartName();
+        errorMap.put("message", "Parte do pedido '" + partName + "' não adicionada");
+        return new ResponseEntity<>(errorMap, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<Map<String, String>> handleEntityN(IllegalArgumentException ex) {
+        Map<String, String> errorMap = new HashMap<>();
+        errorMap.put("message", "IllegalArgumentException");
+        return new ResponseEntity<>(errorMap, HttpStatus.BAD_REQUEST);
+    }
+
+      @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<Map<String, String>> handleValidationExceptions(MethodArgumentNotValidException ex) {
+        Map<String, String> errors = new HashMap<>();
+        ex.getBindingResult().getAllErrors().forEach((error) -> {
+            String fieldName = ((FieldError) error).getField();
+            String errorMessage = error.getDefaultMessage();
+            errors.put(fieldName, errorMessage);
+        });
+        return ResponseEntity.badRequest().body(errors);
     }
 }

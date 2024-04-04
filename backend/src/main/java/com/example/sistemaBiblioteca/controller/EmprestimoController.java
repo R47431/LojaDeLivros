@@ -9,8 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import com.example.sistemaBiblioteca.service.EmprestimoService;
 
-import com.example.sistemaBiblioteca.exception.NullPointerException;
-import com.example.sistemaBiblioteca.exception.NoEqualsException;
+import com.example.sistemaBiblioteca.exception.NotEqualsException;
 import com.example.sistemaBiblioteca.model.EmprestimoModelo;
 
 @RestController
@@ -49,8 +48,8 @@ public class EmprestimoController {
             LOGGER.info("Devolução realizada com sucesso. Empréstimo ID: {}", emprestimoModelo.getEmprestimoId());
             return ResponseEntity
                     .ok("Devolução realizada com sucesso. Empréstimo ID: {}" + emprestimoModelo.getEmprestimoId());
-        } catch (NoEqualsException e) {
-            throw new NoEqualsException("Dados de empréstimo inválidos para devolução.");
+        } catch (NotEqualsException e) {
+            throw new NotEqualsException("Dados de empréstimo inválidos para devolução.");
         } catch (NullPointerException e) {
             throw new NullPointerException("Entidade null");
         }
