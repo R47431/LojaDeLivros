@@ -2,16 +2,13 @@ package com.example.sistemaBiblioteca.dto;
 
 import java.time.LocalDate;
 
+public record EmprestimoComLivroDto(
+            Long emprestimoId,
+            LocalDate dataEmprestimo,
+            LocalDate dataDevolucao,
+            LivroDto livro
 
-import lombok.Getter;
-import lombok.Setter;
+) {
 
-@Getter
-@Setter
-public class EmprestimoComLivroDto {
-   private Long emprestimoId;
-   private LocalDate dataEmprestimo;
-   private LocalDate dataDevolucao;
-   private LivroDto livro;
-  
+    //TODO como fazer dto
 }
