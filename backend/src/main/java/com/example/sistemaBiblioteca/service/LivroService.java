@@ -70,6 +70,7 @@ public class LivroService {
         validaCliente.validaLivro(livroDto);
 
         livroRepository.save(livroModelo);
+
         livroModelo.setImagemDoLivro(livroModelo.getLivroId() + ".jpg");
 
         String diretorio = diretorioDaImagem(livroModelo);
@@ -109,9 +110,7 @@ public class LivroService {
         if (obterId.isPresent()) {
             String deletaImagem = diretorioDaImagem(obterId.get());
             File imagem = new File(deletaImagem);
-            if (imagem.exists()) {
-                imagem.delete();
-            }
+
             livroRepository.deleteById(livroId);
 
         }

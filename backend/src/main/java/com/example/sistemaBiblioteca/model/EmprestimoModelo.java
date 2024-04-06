@@ -20,6 +20,15 @@ public class EmprestimoModelo {
    @Column(name = "emprestimo_id")
    private Long emprestimoId;
 
+
+   @FutureOrPresent(message = "Data de empréstimo deve ser presente ou futura")
+   @Temporal(TemporalType.DATE)
+   private LocalDate dataEmprestimo;
+
+   @Future(message = "Data de devolução deve ser no futuro")
+   @Temporal(TemporalType.DATE)
+   private LocalDate dataDevolucao;
+
    @JsonBackReference
    @ManyToOne
    @JoinColumn(name = "cliente_id")
@@ -29,13 +38,6 @@ public class EmprestimoModelo {
    @JoinColumn(name = "livro_id")
    private LivroModelo livro;
 
-   @FutureOrPresent(message = "Data de empréstimo deve ser presente ou futura")
-   @Temporal(TemporalType.DATE)
-   private LocalDate dataEmprestimo;
-
-   @Future(message = "Data de devolução deve ser no futuro")
-   @Temporal(TemporalType.DATE)
-   private LocalDate dataDevolucao;
 
    public EmprestimoModelo(ClienteModelo cliente, LivroModelo livro,
          @FutureOrPresent(message = "Data de empréstimo deve ser presente ou futura") LocalDate dataEmprestimo) {

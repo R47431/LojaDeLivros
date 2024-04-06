@@ -7,7 +7,6 @@ import java.util.Collection;
 import org.springframework.util.ReflectionUtils;
 
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,17 +17,16 @@ import com.example.sistemaBiblioteca.model.LivroModelo;
 
 @Service
 public class ValidaCliente {
-    private final ClienteModelo clienteModelo;
-    private final LocalValidatorFactoryBean validator;
-    private final LivroModelo livroModelo;
-    
+
+    private ClienteModelo clienteModelo;
+    private LivroModelo livroModelo;
     private LivroDto livroDto;
 
+    private final LocalValidatorFactoryBean validator;
+
     @Autowired
-    public ValidaCliente(ClienteModelo clienteModelo, LocalValidatorFactoryBean validator, LivroModelo livroModelo) {
-        this.clienteModelo = clienteModelo;
+    public ValidaCliente(LocalValidatorFactoryBean validator) {
         this.validator = validator;
-        this.livroModelo = livroModelo;
     }
 
     // TODO Fazer uso do dto
@@ -38,12 +36,14 @@ public class ValidaCliente {
         for (Field field : ClienteDTO.class.getDeclaredFields()) {
             ReflectionUtils.makeAccessible(field);
             Object value = ReflectionUtils.getField(field, clienteDTO);
+            if (field.getName().equals("clienteId")) {
+                continue;
+            }
             if (value == null || (value instanceof String && ((String) value).isEmpty() ||
-                    (value instanceof LocalDate && value == null) ||
+                    (value instanceof LocalDate) ||
                     (value instanceof Collection && ((Collection<?>) value).isEmpty()))) {
                 throw new IllegalArgumentException("O campo " + field.getName() + " é obrigatório.");
             }
-
             if (!validator.validateValue(ClienteDTO.class, field.getName(), value).isEmpty()) {
                 throw new IllegalArgumentException("Falha na validação do campo " + field.getName());
             }
@@ -57,14 +57,11 @@ public class ValidaCliente {
             if (field.getName().equals("livroId") || field.getName().equals("imagemDoLivro")) {
                 continue;
             }
-            
-            if (value == null 
-                    || (value instanceof String && ((String) value).isEmpty())
-                    ) {
+            if (value == null
+                    || (value instanceof String && ((String) value).isEmpty())) {
                 throw new IllegalArgumentException("O campo " + field.getName() +
                         " é obrigatório.");
             }
-            
             if (!validator.validateValue(LivroDto.class, field.getName(),
                     value).isEmpty()) {
                 throw new IllegalArgumentException("Falha na validação do campo " +
@@ -72,6 +69,5 @@ public class ValidaCliente {
             }
         }
     }
-    
 
 }

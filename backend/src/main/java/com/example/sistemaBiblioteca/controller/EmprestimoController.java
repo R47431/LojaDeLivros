@@ -26,10 +26,10 @@ public class EmprestimoController {
     }
 
     @PostMapping("/{clienteId}/{livroId}")
-    public ResponseEntity<?> realizarEmprestimo(@PathVariable Long clienteId, @PathVariable Long livroId) {
+    public ResponseEntity<?> realizarEmprestimo(@PathVariable Long clienteId, @PathVariable Long livroId, Long emprestimoId) {
         try {
            emprestimoService.realizarEmprestimo(clienteId, livroId);
-            LOGGER.info("Empréstimo realizado com sucesso. Cliente ID: {}, Livro ID: {}, Empretimo: {}", clienteId, livroId);
+            LOGGER.info("Empréstimo realizado com sucesso. Cliente ID: {}, Livro ID: {}, Empretimo: {}", clienteId, livroId, emprestimoId);
             return ResponseEntity.status(HttpStatus.CREATED).body("Empréstimo realizado com sucesso");
         } catch (IllegalArgumentException e) {
             LOGGER.error("Erro ao realizar empréstimo: {}", e.getMessage());
@@ -43,11 +43,12 @@ public class EmprestimoController {
             @PathVariable Long livroId,
             @PathVariable Long emprestimoId) {
         try {
-            EmprestimoModelo emprestimoModelo = emprestimoService.realizarDevolucao(clienteId, livroId, emprestimoId);
 
-            LOGGER.info("Devolução realizada com sucesso. Empréstimo ID: {}", emprestimoModelo.getEmprestimoId());
+            EmprestimoModelo emprestimo = emprestimoService.realizarDevolucao(clienteId, livroId, emprestimoId);
+
+            LOGGER.info("Devolução realizada com sucesso. Empréstimo ID: {}", emprestimoId);
             return ResponseEntity
-                    .ok("Devolução realizada com sucesso. Empréstimo ID: {}" + emprestimoModelo.getEmprestimoId());
+                    .ok("Devolução realizada com sucesso.");
         } catch (NotEqualsException e) {
             throw new NotEqualsException("Dados de empréstimo inválidos para devolução.");
         } catch (NullPointerException e) {

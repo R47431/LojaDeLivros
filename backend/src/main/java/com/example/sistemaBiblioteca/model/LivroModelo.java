@@ -15,11 +15,11 @@ import jakarta.persistence.TemporalType;
 import lombok.Getter;
 import lombok.Setter;
 
-@Component
-@Getter
-@Setter
+
 @Entity
 @Table(name = "livros")
+@Getter
+@Setter
 public class LivroModelo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -71,9 +71,4 @@ public class LivroModelo {
 
     public LivroModelo() {
     }
-
-    
-
-    
-    
 }

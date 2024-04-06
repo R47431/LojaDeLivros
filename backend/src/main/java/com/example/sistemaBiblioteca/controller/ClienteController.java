@@ -1,10 +1,7 @@
 package com.example.sistemaBiblioteca.controller;
 
-import javax.validation.Valid;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,7 +11,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.sistemaBiblioteca.model.ClienteModelo;
 import com.example.sistemaBiblioteca.repository.ClienteRepository;
-import com.example.sistemaBiblioteca.dto.ClienteComEmprestimosDto;
 import com.example.sistemaBiblioteca.dto.ClienteDTO;
 import com.example.sistemaBiblioteca.global.GlobalService;
 import com.example.sistemaBiblioteca.global.ValidaCliente;
@@ -34,23 +30,20 @@ public class ClienteController {
         this.globalService = globalService;
         this.clienteRepository = clienteRepository;
     }
-/*   @GetMapping("/{clienteId}")
+
+    @GetMapping("/{clienteId}")
     public ResponseEntity<?> getClienteComEmprestimos(@PathVariable Long clienteId) {
         ClienteModelo cliente = globalService.encontrarEntidadePorId(clienteRepository, clienteId,
                 "Cliente nao encontrado ou nao cadastrado");
 
-        if (cliente != null) {
-            ClienteComEmprestimosDto clienteDto = clienteMapper.toClienteComEmprestimosDto(cliente);
+        return ResponseEntity.ok(cliente);
 
-            return ResponseEntity.ok(clienteDto);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
-    }*/
-  
+    }
+
+    
 
     @PostMapping
-    public ResponseEntity<?> cadastraCliente(@Valid ClienteModelo clienteModelo, ClienteDTO clienteDTO) {
+    public ResponseEntity<?> cadastraCliente(ClienteModelo clienteModelo, ClienteDTO clienteDTO) {
         validaCliente.validaCliente(clienteDTO);
         ClienteModelo savedClienteModelo = clienteRepository.save(clienteModelo);
         return ResponseEntity.ok(savedClienteModelo);

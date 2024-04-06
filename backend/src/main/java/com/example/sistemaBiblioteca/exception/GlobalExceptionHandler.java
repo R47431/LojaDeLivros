@@ -16,7 +16,7 @@ import org.springframework.web.multipart.support.MissingServletRequestPartExcept
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<Map<String, String>> handleEntityNotFoundException(NotFoundException ex) {
+    public ResponseEntity<Map<String, String>> handleNotFoundException(NotFoundException ex) {
         Map<String, String> errorMap = new HashMap<>();
         errorMap.put("message", "NotFoundException");
         return new ResponseEntity<>(errorMap, HttpStatus.NOT_FOUND);
@@ -25,15 +25,16 @@ public class GlobalExceptionHandler {
     //TODO muda a MESSAGEM DE ERRO
 
     @ExceptionHandler(NullPointerException.class)
-    public ResponseEntity<Map<String, String>> handleEntityNullPointerException(NullPointerException ex) {
+    public ResponseEntity<Map<String, String>> handleNullPointerException(NullPointerException ex) {
         Map<String, String> errorMap = new HashMap<>();
-        errorMap.put("message", "NullPointerException");
+        String partName = ex.getLocalizedMessage();
+        errorMap.put("message", "NullPointerException" + partName);
         return new ResponseEntity<>(errorMap, HttpStatus.BAD_REQUEST);
     }
 
 
     @ExceptionHandler(NotEqualsException.class)
-    public ResponseEntity<?> handleNoEqualsException(NotEqualsException ex) {
+    public ResponseEntity<?> handleNotEqualsException(NotEqualsException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Dados de empréstimo inválidos para devolução.");
     }
 
@@ -47,14 +48,14 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<Map<String, String>> handleEntityN(IllegalArgumentException ex) {
+    public ResponseEntity<Map<String, String>> handleIllegalArgumentException(IllegalArgumentException ex) {
         Map<String, String> errorMap = new HashMap<>();
         errorMap.put("message", "IllegalArgumentException");
         return new ResponseEntity<>(errorMap, HttpStatus.BAD_REQUEST);
     }
 
-      @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Map<String, String>> handleValidationExceptions(MethodArgumentNotValidException ex) {
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<Map<String, String>> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
         Map<String, String> errors = new HashMap<>();
         ex.getBindingResult().getAllErrors().forEach((error) -> {
             String fieldName = ((FieldError) error).getField();
