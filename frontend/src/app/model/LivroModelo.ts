@@ -1,6 +1,7 @@
 export class LivroModelo {
   livroId: number =  0;
   imagemDoLivro: string = '';
+  imagem: string = '';
   titulo: string = '';
   nomeDoAutor: string = '';
   nacionalidade: string = '';

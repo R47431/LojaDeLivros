@@ -2,12 +2,12 @@ package com.example.sistemaBiblioteca.global;
 
 import java.util.Optional;
 
+import com.example.sistemaBiblioteca.exception.NotEqualsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 
-import com.example.sistemaBiblioteca.exception.NotEqualsException;
 
 
 @Service
@@ -19,23 +19,16 @@ public class GlobalService {
             throw new NullPointerException("");
         }
         Optional<T> entidadeOptional = repositorio.findById(id);
-        if (!entidadeOptional.isPresent()) {
+        if (entidadeOptional.isEmpty()) {
             LOGGER.warn("Entidade não encontrada: {}", messagem);
-            
-
         }
         return entidadeOptional.get();
     }
-
+//TODO teste de usando != ives de .equals
     public <T> void verificarIgualdade(T valorEntidade, T valorComparacao) {
-        if (!valorEntidade.equals(valorComparacao)) {
+        if (valorEntidade != valorComparacao) {
             throw new NotEqualsException("");
         }
     }
 
-    public <T> void verificarNull(T valor) {
-        if (valor == null || valor == "") {
-            throw new NullPointerException("");
-        }
-    }
 }

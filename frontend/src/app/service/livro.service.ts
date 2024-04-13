@@ -8,7 +8,7 @@ import { LivroModelo } from '../model/LivroModelo';
 })
 export class LivroService {
 
-  private url: string = "http://localhost:8080/sistemaBiblioteca-0.0.1/livro";
+  private url: string = "http://localhost:8080/livro";
 
   constructor(private http: HttpClient) { }
 
@@ -16,6 +16,4 @@ export class LivroService {
   listaLivros(): Observable<LivroModelo[]>{
     return this.http.get<LivroModelo[]>(this.url+"/lista");
   }
-
-
 }

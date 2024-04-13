@@ -1,4 +1,5 @@
 package com.example.sistemaBiblioteca.global;
+/*
 
 import java.lang.reflect.Field;
 import java.time.LocalDate;
@@ -16,7 +17,7 @@ import com.example.sistemaBiblioteca.model.ClienteModelo;
 import com.example.sistemaBiblioteca.model.LivroModelo;
 
 @Service
-public class ValidaCliente {
+public class Validacaoes {
 
     private ClienteModelo clienteModelo;
     private LivroModelo livroModelo;
@@ -25,12 +26,9 @@ public class ValidaCliente {
     private final LocalValidatorFactoryBean validator;
 
     @Autowired
-    public ValidaCliente(LocalValidatorFactoryBean validator) {
+    public Validacaoes(LocalValidatorFactoryBean validator) {
         this.validator = validator;
     }
-
-    // TODO Fazer uso do dto
-    // TODO muda os DTO para class
 
     public void validaCliente(ClienteDTO clienteDTO) {
         for (Field field : ClienteDTO.class.getDeclaredFields()) {
@@ -49,6 +47,7 @@ public class ValidaCliente {
             }
         }
     }
+
 
     public void validaLivro(LivroDto livroDto) {
         for (Field field : LivroDto.class.getDeclaredFields()) {
@@ -70,4 +69,22 @@ public class ValidaCliente {
         }
     }
 
+
+    public <T> void validaCliente(T t) {
+        for (Field field : t.getClass().getDeclaredFields()) {
+            ReflectionUtils.makeAccessible(field);
+            Object value = ReflectionUtils.getField(field, t);
+
+
+            if (value == null
+                    || (value instanceof String && ((String) value).isEmpty())) {
+                throw new IllegalArgumentException("O campo " + field.getName() +
+                        " é obrigatório.");
+            }
+            if (!validator.validateValue(t.getClass(), field.getName(), value).isEmpty()) {
+                throw new IllegalArgumentException("Falha na validação do campo " + field.getName());
+            }
+        }
+    }
 }
+ */

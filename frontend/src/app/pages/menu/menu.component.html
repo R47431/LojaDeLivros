@@ -1,6 +1,8 @@
 <p>menu works!</p>
 <div *ngFor="let item of livros">
     {{ item.livroId}} <br>
+    <img [src]="'home/rafael/Documentos/PROJETOS/projetosJava/2Biblioteca/img/' + item.imagemDoLivro" alt="">
+
     {{ item.titulo}}<br>
     {{ item.nomeDoAutor}}<br>
     {{ item.nacionalidade}}<br>

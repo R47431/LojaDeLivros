@@ -12,8 +12,6 @@ import com.example.sistemaBiblioteca.repository.ClienteRepository;
 import com.example.sistemaBiblioteca.repository.EmprestimosRepository;
 import com.example.sistemaBiblioteca.repository.LivroRepository;
 
-import jakarta.transaction.Transactional;
-
 @Service
 public class EmprestimoService {
 
@@ -30,7 +28,14 @@ public class EmprestimoService {
 
     }
 
-    @Transactional
+    /**
+     * Metodo para procura e valida ClienteId e LivroId
+     * para salvar
+     * 
+     * @param clienteId
+     * @param livroId
+     * @return Retorna o emprestimo salvo
+     */
     public EmprestimoModelo realizarEmprestimo(Long clienteId, Long livroId) {
         if (clienteId == null || livroId == null) {
             throw new IllegalArgumentException("ClienteId, LivroId must not be null");
@@ -43,10 +48,17 @@ public class EmprestimoService {
         EmprestimoModelo emprestimoModelo = new EmprestimoModelo(cliente, livro, LocalDate.now());
 
         return emprestimosRepository.save(emprestimoModelo);
-
     }
 
-    @Transactional
+    /**
+     * Metodo para procura e valida ClienteId, LivroId e EmprestimoId
+     * para altera
+     * 
+     * @param clienteId
+     * @param livroId
+     * @param emprestimoId
+     * @return Retorna o emprestimo alterado
+     */
     public EmprestimoModelo realizarDevolucao(Long clienteId, Long livroId, Long emprestimoId) {
         if (clienteId == null || livroId == null || emprestimoId == null) {
             throw new IllegalArgumentException("ClienteId, LivroId, and EmprestimoId must not be null");
@@ -67,7 +79,16 @@ public class EmprestimoService {
         }
         emprestimo.setDataDevolucao(LocalDate.now());
         return emprestimosRepository.save(emprestimo);
+    }
 
+    /**
+     * Metodo para DELETA o emprestimo
+     * 
+     * @param emprestimoId
+     */
+    public void deletaEmprestimo(Long emprestimoId) {
+        
+        emprestimosRepository.deleteById(emprestimoId);
     }
 
 }

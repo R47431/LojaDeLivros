@@ -2,11 +2,22 @@ package com.example.sistemaBiblioteca.dto;
 
 import java.util.List;
 
-import org.springframework.stereotype.Component;
+import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-public record ClienteComEmprestimosDto(
-                Long clienteId,
-                String nome,
-                String email,
-                List<EmprestimoComLivroDto> emprestimos) {
+@Setter
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
+public class ClienteComEmprestimosDto {
+    @NotNull(message = "O campo clienteId é obrigatório.")
+    private Long clienteId;
+    @NotNull(message = "O campo nome é obrigatório.")
+    private String nome;
+    @NotNull(message = "O campo email é obrigatório.")
+    private String email;
+    private List<EmprestimoComLivroDto> emprestemos;
 }

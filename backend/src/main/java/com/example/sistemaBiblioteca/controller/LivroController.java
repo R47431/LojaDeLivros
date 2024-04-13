@@ -1,42 +1,36 @@
 package com.example.sistemaBiblioteca.controller;
 
-import java.util.Optional;
+import jakarta.validation.ConstraintViolationException;
 
-import org.modelmapper.ModelMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.sistemaBiblioteca.dto.LivroDto;
-import com.example.sistemaBiblioteca.global.ValidaCliente;
 import com.example.sistemaBiblioteca.model.LivroModelo;
 import com.example.sistemaBiblioteca.repository.LivroRepository;
 import com.example.sistemaBiblioteca.service.LivroService;
 
+import javax.validation.Valid;
+
 @RestController
 @RequestMapping("/livro")
+@Validated
 public class LivroController {
     // TODO fazer melhora de codigo validadores no service
     //TODO add testes unitarios
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(EmprestimoController.class);
 
     private final LivroRepository livroRepository;
+    private final LivroService livroService;
 
     @Autowired
-    private ValidaCliente cliente;
-    @Autowired
-    private ModelMapper mapper;
-    @Autowired
-    private LivroService livroService;
-
-    @Autowired
-    public LivroController(LivroRepository livroRepository) {
+    public LivroController(LivroRepository livroRepository, LivroService livroService) {
         this.livroRepository = livroRepository;
+        this.livroService = livroService;
     }
 
     @GetMapping("/lista")
@@ -44,14 +38,19 @@ public class LivroController {
         return livroRepository.findAll();
     }
 
+    /**
+     * Retorna os detalhes de um livro específico.
+     *
+     * @param livroId ID do livro a ser buscado.
+     * @return DTO do livro.
+     */
     @GetMapping("/{livroId}")
-    public LivroDto listaLivro(@PathVariable Long livroId) {
-        Optional<LivroModelo> livroModelo = livroRepository.findById(livroId);
-        return mapper.map(livroModelo, LivroDto.class);
+    public LivroModelo verlivro(@PathVariable Long livroId) {
+        return livroService.verLivro(livroId);
     }
 
     @PostMapping
-    public ResponseEntity<?> cadastraLivro(LivroDto livroDto, @RequestParam("imagem") MultipartFile imagem) {
+    public ResponseEntity<?> cadastraLivro(@Valid LivroDto livroDto, @RequestParam("imagem") MultipartFile imagem) {
         try {
             LivroModelo livroSalvo = livroService.cadastralivro(livroDto, imagem);
             return ResponseEntity.status(HttpStatus.CREATED).body(livroSalvo);
@@ -59,7 +58,9 @@ public class LivroController {
             throw new NullPointerException("Entidade null {}");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        } catch (Exception e) {
+        } catch (ConstraintViolationException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getConstraintViolations());
+        }catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Ocorreu um erro ao processar o Cadastro." + e.getMessage());
         }

@@ -25,4 +25,9 @@ public class ClienteService {
         Optional<ClienteModelo> clienteOptional = clienteRepository.findById(clienteId);
         return clienteOptional.orElse(null);
     }
+
+    public ClienteModelo cadastraCliente(ClienteModelo clienteModelo) {
+        ClienteModelo savedClienteModelo = clienteRepository.save(clienteModelo);
+        return savedClienteModelo;
+    }
 }
