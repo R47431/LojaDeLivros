@@ -1,6 +1,7 @@
 package com.example.sistemaBiblioteca.model;
 
 import jakarta.persistence.*;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -42,16 +43,18 @@ public class EmprestimoModelo {
     @JoinColumn(name = "livro_id")
     private LivroModelo livro;
 
+    @ManyToOne
+    @JoinColumn(name = "titulo")
+    private LivroModelo tirulo;
+
     public EmprestimoModelo(
-            @FutureOrPresent(message = "Data de empréstimo deve ser presente ou futura") 
-            ClienteModelo cliente, LivroModelo livro,LocalDate dataEmprestimo) {
+            ClienteModelo cliente,
+            LivroModelo livro,
+            LocalDate dataEmprestimo) {
         this.cliente = cliente;
         this.livro = livro;
         this.dataEmprestimo = dataEmprestimo;
 
     }
 
-    
-
-    
 }

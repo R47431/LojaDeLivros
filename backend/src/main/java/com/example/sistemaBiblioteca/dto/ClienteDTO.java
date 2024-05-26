@@ -25,7 +25,8 @@ public class ClienteDTO {
     @NotBlank(message = "TELEFONE NAO PODE SER VAZIO")
     private String numeroDeTelefone;
 
-   @Email(message = "EMAIL INVALIDO")
+    @NotBlank(message = "ta errado email")
+    @Email(message = "EMAIL INVALIDO")
     private String email;
 
 
