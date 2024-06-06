@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { ModeloLivro } from '../../model/modelolivro';
+import { LivroDto } from '../../model/testeModelos';
 import { FormGroup, FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { LivroService } from '../../service/livro.service';
 
@@ -11,15 +11,14 @@ import { LivroService } from '../../service/livro.service';
   styleUrl: './livro.component.css'
 })
 export class LivroComponent {
-  formLivro: FormGroup;
+  formLivro!: FormGroup;
   fileToUpload: File | null = null;
-  livros: ModeloLivro[] = [];
-  livro: ModeloLivro = new ModeloLivro();
-
+  livros: LivroDto[] = [];
 
   constructor(private formBuilder: FormBuilder, private livroService: LivroService) {
+
     this.formLivro = this.formBuilder.group({
-      livro_id: [''],
+      livroId: [''],
       imagemDoLivro: [''],
       titulo: [''],
       nomeDoAutor: [''],
@@ -31,14 +30,10 @@ export class LivroComponent {
     });
   }
 
-  ngOnInit(): void {
-    this.mostraLivros();
-
-  }
 
   mostraLivros() {
     this.livroService.getlivros()
-      .subscribe((data: ModeloLivro[]) => {
+      .subscribe((data: LivroDto[]) => {
         this.livros = data;
 
       });
@@ -78,11 +73,11 @@ export class LivroComponent {
     }
   }
 
-  deletarLivro(): void {
-    this.livroService.deleteLivro(this.livro.livro_id)
+  deletarLivro(livro_id: number): void {
+    this.livroService.deleteLivro(livro_id)
       .subscribe({
         next: value => {
-          
+
           alert('Livro deletado com sucess');
         },
         error(err) {
@@ -92,10 +87,10 @@ export class LivroComponent {
       });
   }
 
-
   selecionarArquivo(event: any): void {
     const arquivoSelecionado = event.target.files[0];
     this.fileToUpload = arquivoSelecionado;
-    this.livro.imagemDoLivro = arquivoSelecionado.name;
+    this.formLivro.get('imagemDoLivro')?.setValue(arquivoSelecionado.name); // Definindo o valor aqui
   }
+
 }

@@ -43,10 +43,6 @@ public class EmprestimoModelo {
     @JoinColumn(name = "livro_id")
     private LivroModelo livro;
 
-    @ManyToOne
-    @JoinColumn(name = "titulo")
-    private LivroModelo tirulo;
-
     public EmprestimoModelo(
             ClienteModelo cliente,
             LivroModelo livro,

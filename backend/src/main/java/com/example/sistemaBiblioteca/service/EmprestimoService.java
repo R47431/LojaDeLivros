@@ -44,6 +44,7 @@ public class EmprestimoService {
         LivroModelo livro = livroRepository.findById(livroId)
                 .orElseThrow(() -> new IllegalArgumentException("Livro Not Found"));
 
+        
         EmprestimoModelo emprestimoModelo = new EmprestimoModelo(cliente, livro, LocalDate.now());
 
         return emprestimosRepository.save(emprestimoModelo);
@@ -79,6 +80,8 @@ public class EmprestimoService {
         return emprestimosRepository.save(emprestimo);
 
     }
+
+  
 
     /**
      * Metodo para DELETA o emprestimo

@@ -1,7 +1,7 @@
 <form [formGroup]="formLivro" enctype="multipart/form-data">
 
     <label for="imagemDoLivro">Imagem do Livro:</label>
-    <input type="file" id="imagemDoLivro" formControlName="imagemDoLivro" (change)="selecionarArquivo($event)"><br>
+    <input type="file" id="imagemDoLivro" (change)="selecionarArquivo($event)"><br>
 
     <label for="titulo">Título:</label>
     <input type="text" id="titulo" formControlName="titulo"><br>
@@ -26,14 +26,12 @@
 
     <button (click)="cadastrarLivro()">cadastrars</button>
     <button (click)="updatelivro()">altera</button>
-
-
    
 </form>
-<div>
-    <label for="livro_id">ID do Livro:</label>
-    <input type="number" id="livro_id" formControlName="livro_id"><br>
+<div [formGroup]="formLivro">
+    <label for="livroId">ID do Livro:</label>
+    <input type="number" id="livroId" formControlName="livroId"><br>
 
-    <button (click)="deletarLivro()">deleta</button>
+    <button (click)="deletarLivro(formLivro.get('livroId')?.value)">deleta</button>
 
 </div>

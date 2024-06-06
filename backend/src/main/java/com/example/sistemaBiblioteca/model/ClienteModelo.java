@@ -5,6 +5,9 @@ import java.util.List;
 
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.*;
 
 import lombok.Getter;
@@ -12,7 +15,6 @@ import lombok.Setter;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
-@Component
 @Getter
 @Setter
 @Entity
@@ -28,6 +30,7 @@ public class ClienteModelo {
     private LocalDate dataDeNascimento;
     private String numeroDeTelefone;
     private String email;
+    
     @OneToMany(mappedBy = "cliente")
     private List<EmprestimoModelo> emprestimos;
 }

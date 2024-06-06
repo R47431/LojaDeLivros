@@ -10,6 +10,8 @@ import com.example.sistemaBiblioteca.service.EmprestimoService;
 
 @RestController
 @RequestMapping("/emprestimo")
+@CrossOrigin("*")
+
 public class EmprestimoController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EmprestimoController.class);

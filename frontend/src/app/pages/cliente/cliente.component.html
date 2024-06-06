@@ -1,1 +1,42 @@
-<p>cliente works!</p>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <h1>Lista de Clientes</h1>
+
+
+    <!-- Verifica se existem clientes -->
+    @if (clientes && clientes.length) {
+    <div>
+        <!-- Itera sobre cada cliente -->
+        <ul>
+            @for (cliente of clientes; track $index) {
+            <li>
+                <!-- Exibe os detalhes do cliente -->
+                <p>Nome: {{ cliente.nome }}</p>
+                <p>Data de Nascimento: {{ cliente.dataDeNascimento }}</p>
+                <p>Número de Telefone: {{ cliente.numeroDeTelefone }}</p>
+                <p>Email: {{ cliente.email }}</p>
+            </li>
+            }
+
+        </ul>
+    </div>
+    }
+
+    <!-- Caso não haja clientes -->
+    @if (!clientes || clientes.length === 0) {
+    <div>
+        <p>Nenhum cliente encontrado.</p>
+    </div>
+    }
+
+</body>
+
+</html>

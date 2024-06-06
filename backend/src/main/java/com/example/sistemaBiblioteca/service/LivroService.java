@@ -1,16 +1,18 @@
 package com.example.sistemaBiblioteca.service;
 
+import com.example.sistemaBiblioteca.util.FileValidator;
 import jakarta.persistence.EntityNotFoundException;
 
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.sistemaBiblioteca.dto.LivroDto;
+import com.example.sistemaBiblioteca.model.EmprestimoModelo;
 import com.example.sistemaBiblioteca.model.LivroModelo;
+import com.example.sistemaBiblioteca.repository.EmprestimosRepository;
 import com.example.sistemaBiblioteca.repository.LivroRepository;
 
 import java.io.File;
@@ -18,6 +20,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -26,23 +30,17 @@ public class LivroService {
     private static final Logger LOGGER = LoggerFactory.getLogger(LivroService.class);
 
     private final ModelMapper mapper;
-
     private final LivroRepository livroRepository;
+    private final EmprestimosRepository emprestimosRepository;
+    private final FileValidator fileValidator;
 
-    public LivroService(LivroRepository livroRepository, ModelMapper mapper) {
+
+    public LivroService(LivroRepository livroRepository, ModelMapper mapper,
+                        EmprestimosRepository emprestimosRepository, FileValidator fileValidator) {
         this.livroRepository = livroRepository;
         this.mapper = mapper;
-
-    }
-
-    private final String IMG_DIR = Paths.get(System.getProperty("user.dir")).getParent().resolve("img").toString();
-
-    private String sanitizeFileName(String input) {
-        return input.replaceAll("[^a-zA-Z0-9\\-_.]+", "_");
-    }
-
-    public String diretorioDaImagem(LivroModelo livroModelo) {
-        return IMG_DIR + File.separator + sanitizeFileName(livroModelo.getTitulo()) + ".jpg";
+        this.emprestimosRepository = emprestimosRepository;
+        this.fileValidator = fileValidator;
     }
 
     /**
@@ -65,16 +63,20 @@ public class LivroService {
      * @throws IOException lança exception da imagem
      */
     public LivroModelo cadastralivro(LivroDto livroDto, MultipartFile imagem) throws IOException {
-
         LivroModelo livroModelo = mapper.map(livroDto, LivroModelo.class);
         if (imagem == null || imagem.isEmpty()) {
             LOGGER.error("Imagem nula ou vazia");
             throw new IllegalArgumentException("sem imagem");
         }
-        livroModelo.setImagemDoLivro(livroModelo.getTitulo() + ".jpg");
 
-        Files.copy(imagem.getInputStream(), Paths.get(diretorioDaImagem(livroModelo)),
-                StandardCopyOption.REPLACE_EXISTING);
+        fileValidator.validateFile(imagem);
+
+        String fileType = fileValidator.getFileType(Objects.requireNonNull(imagem.getContentType())); // obtém a extensão do arquivo
+        String imageDirectory = fileValidator.diretorioDaImagem(livroModelo, fileType); // obtém o diretório da imagem
+
+        Files.copy(imagem.getInputStream(), Paths.get(imageDirectory), StandardCopyOption.REPLACE_EXISTING);
+        livroModelo.setImagemDoLivro(livroModelo.getTitulo() + fileType); // Define o caminho da imagem no modelo de livro
+
 
         return livroRepository.save(livroModelo);
     }
@@ -90,13 +92,18 @@ public class LivroService {
      */
     public LivroModelo alteraLivro(long livroId, MultipartFile imagem, LivroDto livroDto) throws IOException {
         LivroModelo livroModelo = mapper.map(livroDto, LivroModelo.class);
+
         LivroModelo livroExistente = livroRepository.findById(livroId)
                 .orElseThrow(() -> new EntityNotFoundException("Livro não encontrado"));
 
         if (imagem != null && !imagem.isEmpty()) {
-            livroModelo.setImagemDoLivro(livroModelo.getTitulo() + ".jpg");
-            Files.copy(imagem.getInputStream(), Paths.get(diretorioDaImagem(livroModelo)),
-                    StandardCopyOption.REPLACE_EXISTING);
+
+            fileValidator.validateFile(imagem);
+            String fileType = fileValidator.getFileType(Objects.requireNonNull(imagem.getContentType()));
+            String imageDiretory = fileValidator.diretorioDaImagem(livroModelo, fileType);
+
+            livroModelo.setImagemDoLivro(livroModelo.getTitulo() + fileType);
+            Files.copy(imagem.getInputStream(), Paths.get(imageDiretory), StandardCopyOption.REPLACE_EXISTING);
         } else {
             livroModelo.setImagemDoLivro(livroExistente.getImagemDoLivro());
 
@@ -107,21 +114,30 @@ public class LivroService {
     /**
      * Metodo que deleta Livro pelo Id
      *
-     * @param livroId
+     * @param id id do livro
      */
-    public void deletaLivro(Long livroId) {
-        if (livroId == null) {
-            throw new IllegalArgumentException("livroId não pode ser nulo");
-        }
-        Optional<LivroModelo> obterId = livroRepository.findById(livroId);
-        if (obterId.isPresent()) {
-            String deletaImagem = diretorioDaImagem(obterId.get());
-            File imagem = new File(deletaImagem);
-            imagem.delete();
+    public void deletaLivro(Long id) {
+        Optional<LivroModelo> livroOptional = livroRepository.findById(id);
 
-            livroRepository.deleteById(livroId);
-
+        if (livroOptional.isEmpty()) {
+            throw new IllegalArgumentException("Livro não encontrado com o ID fornecido: " + id);
         }
+
+        List<EmprestimoModelo> emprestimos = emprestimosRepository.findByLivro(livroOptional.get());
+        for (EmprestimoModelo emprestimo : emprestimos) {
+            if (emprestimo.getDataDevolucao() == null) {
+                throw new IllegalStateException("Não é possível excluir o Cliente com empréstimos em aberto ");
+            }
+        }
+
+        String fileType = fileValidator.getFile(livroOptional.get().getImagemDoLivro());
+        String caminhoImagem = fileValidator.diretorioDaImagem(livroOptional.get(), fileType);
+        File imagem = new File(caminhoImagem);
+        if (imagem.exists() && !imagem.delete()) {
+            throw new IllegalStateException("Falha ao excluir a imagem do livro: " + caminhoImagem);
+        }
+
+        emprestimosRepository.deleteAll();
+        livroRepository.deleteById(id);
     }
-
 }
