@@ -75,6 +75,13 @@ public class FileValidator {
         return IMG_DIR + File.separator + sanitizedFileName + fileType;
     }
 
+    /**
+     * Deleta a imagem associada a um livro do sistema.
+     *
+     * @param livro o livro do qual a imagem deve ser deletada
+     * @throws IllegalStateException se houver uma falha ao excluir a imagem do
+     *                               livro
+     */
     public void deletarImagem(LivroModelo livro) {
         String fileType = getFile(livro.getImagemDoLivro());
         String imagePath = getImageDirectory(livro, fileType);
@@ -84,6 +91,16 @@ public class FileValidator {
         }
     }
 
+    /**
+     * Valida se uma imagem foi fornecida e se ela atende aos critérios de
+     * validação.
+     *
+     * @param imagem a imagem a ser validada
+     * @throws IllegalArgumentException se a imagem não for fornecida ou estiver
+     *                                  vazia
+     * @throws FileValidationException  se a imagem não atender aos critérios de
+     *                                  validação
+     */
     public void validarImagem(MultipartFile imagem) {
         if (imagem == null || imagem.isEmpty()) {
             throw new IllegalArgumentException("Imagem não fornecida");

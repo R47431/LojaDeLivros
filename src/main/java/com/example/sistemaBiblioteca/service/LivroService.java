@@ -1,14 +1,13 @@
 package com.example.sistemaBiblioteca.service;
 
-import com.example.sistemaBiblioteca.util.FileValidator;
-import com.example.sistemaBiblioteca.util.LoanValidator;
-
 import jakarta.persistence.EntityNotFoundException;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.example.sistemaBiblioteca.util.FileValidator;
+import com.example.sistemaBiblioteca.util.LoanValidator;
 import com.example.sistemaBiblioteca.dto.LivroDto;
 import com.example.sistemaBiblioteca.model.LivroModelo;
 import com.example.sistemaBiblioteca.repository.LivroRepository;
@@ -43,8 +42,7 @@ public class LivroService {
      * @throws EntityNotFoundException se o livro não for encontrado
      */
     public LivroModelo verLivro(long livroId) {
-        return livroRepository.findById(livroId)
-                .orElseThrow(() -> new IllegalArgumentException("Livro Not Found"));
+        return loanValidator.buscarLivroPorId(livroId);
     }
 
     /**

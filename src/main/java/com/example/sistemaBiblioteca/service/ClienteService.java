@@ -1,6 +1,5 @@
 package com.example.sistemaBiblioteca.service;
 
-import java.util.List;
 import java.util.Optional;
 
 import org.modelmapper.ModelMapper;
@@ -8,10 +7,13 @@ import org.springframework.stereotype.Service;
 
 import com.example.sistemaBiblioteca.repository.ClienteRepository;
 import com.example.sistemaBiblioteca.repository.EmprestimosRepository;
+import com.example.sistemaBiblioteca.util.LoanValidator;
+
+import jakarta.transaction.Transactional;
+
 import com.example.sistemaBiblioteca.dto.ClienteDTO;
 import com.example.sistemaBiblioteca.global.exception.NotFoundException;
 import com.example.sistemaBiblioteca.model.ClienteModelo;
-import com.example.sistemaBiblioteca.model.EmprestimoModelo;
 
 @Service
 public class ClienteService {
@@ -19,14 +21,17 @@ public class ClienteService {
     private final ClienteRepository clienteRepository;
     private final ModelMapper mapper;
     private final EmprestimosRepository emprestimosRepository;
+    private final LoanValidator loanValidator;
 
     public ClienteService(
             ClienteRepository clienteRepository,
             ModelMapper mapper,
-            EmprestimosRepository emprestimosRepository) {
+            EmprestimosRepository emprestimosRepository,
+            LoanValidator loanValidator) {
         this.clienteRepository = clienteRepository;
         this.mapper = mapper;
         this.emprestimosRepository = emprestimosRepository;
+        this.loanValidator = loanValidator;
     }
 
     public Optional<ClienteModelo> encontrarClientre(Long clienteId) {
@@ -56,24 +61,19 @@ public class ClienteService {
      * 
      * @param id do cliente
      */
+    @Transactional
     public void deletaCliente(long id) {
         Optional<ClienteModelo> clienteOptional = clienteRepository.findById(id);
         if (!clienteOptional.isPresent()) {
             throw new NotFoundException("Cliente nao Encontrado");
         }
-        List<EmprestimoModelo> emprestimos = emprestimosRepository.findByCliente(clienteOptional.get());
-
-        for (EmprestimoModelo emprestimo : emprestimos) {
-            if (emprestimo.getDataDevolucao() == null) {
-                throw new IllegalStateException("Não é possível excluir o cliente com empréstimos em aberto");
-            }
-        }
+        ClienteModelo cliente = clienteOptional.get();
+        loanValidator.verificarEmprestimosPendentes(cliente);
 
         // Exclui todos os empréstimos do cliente
-        emprestimosRepository.deleteAll(emprestimos);
+        emprestimosRepository.deleteByCliente(cliente);
         // Exclui o cliente
         clienteRepository.deleteById(id);
 
     }
-
 }

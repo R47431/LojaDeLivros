@@ -15,7 +15,5 @@ public interface EmprestimosRepository extends JpaRepository<EmprestimoModelo, L
     List<EmprestimoModelo> findByCliente(ClienteModelo cliente);
     List<EmprestimoModelo> findByLivro(LivroModelo livro);
 
-
-
-
+    List<EmprestimoModelo> deleteByCliente(ClienteModelo cliente);
 }
