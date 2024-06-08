@@ -3,11 +3,6 @@ package com.example.sistemaBiblioteca.model;
 import java.time.LocalDate;
 import java.util.List;
 
-import org.springframework.stereotype.Component;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-
 import jakarta.persistence.*;
 
 import lombok.Getter;

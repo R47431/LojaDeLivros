@@ -21,15 +21,12 @@ import com.example.sistemaBiblioteca.global.exception.NotFoundException;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    //TODO add erro HttpMessageNotReadableException
-
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<Map<String, String>> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex){
         Map<String, String> erroMap = new HashMap<>();
         erroMap.put("message", ex.getMessage());
         return new ResponseEntity<>(erroMap, HttpStatus.NOT_FOUND);
     }
-
 
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<Map<String, String>> handleNotFoundException(NotFoundException ex) {
@@ -71,7 +68,6 @@ public class GlobalExceptionHandler {
         errors.put("message", ex.getMessage());
         return ResponseEntity.badRequest().body(errors);
     }
-
 
     @ExceptionHandler(IllegalStateException.class)
     public ResponseEntity<Map<String, String>> handleIllegalStateException(IllegalStateException ex) {

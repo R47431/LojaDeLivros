@@ -54,7 +54,7 @@ public class LivroController {
     public ResponseEntity<?> alteraLivro(
             @PathVariable Long livroId,
             @RequestPart("livro") LivroDto livroDto,
-            @RequestPart("imagem") MultipartFile imagem) throws IOException {
+            @RequestPart(value = "imagem", required = false)MultipartFile imagem) throws IOException {
 
         LivroModelo livroModelo = livroService.alteraLivro(livroId, imagem, livroDto);
         return ResponseEntity.ok(livroModelo);
