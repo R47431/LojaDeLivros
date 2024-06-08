@@ -76,18 +76,19 @@ public class LivroService {
      * @throws IOException se ocorrer um erro de I/O durante a cópia da nova imagem
      */
     public LivroModelo alteraLivro(long livroId, MultipartFile imagem, LivroDto livroDto) throws IOException {
-        LivroModelo livroModelo = loanValidator.buscarLivroPorId(livroId);
+        LivroModelo livro = loanValidator.buscarLivroPorId(livroId);
+        String fileType;
 
         if (imagem != null && !imagem.isEmpty()) {
             fileValidator.validarImagem(imagem);
-            String fileType = fileValidator.getFileType(Objects.requireNonNull(imagem.getContentType()));
-            String imageDiretory = fileValidator.getImageDirectory(livroModelo, fileType);
-
-            livroModelo.setImagemDoLivro(livroModelo.getTitulo() + fileType);
-            Files.copy(imagem.getInputStream(), Paths.get(imageDiretory), StandardCopyOption.REPLACE_EXISTING);
+            fileType = fileValidator.getFileType(Objects.requireNonNull(imagem.getContentType()));
+            String imageDiretory = fileValidator.getImageDirectory(livro, fileType);
+            fileValidator.copiarImagem(imagem, imageDiretory);
+        }else {
+            fileType = fileValidator.getFileTypeFromImagemDoLivro(livro);
         }
-
-        livroModelo = mapper.map(livroDto, LivroModelo.class);
+        LivroModelo livroModelo = mapper.map(livroDto, LivroModelo.class);
+        livroModelo.setImagemDoLivro(livroModelo.getTitulo() + fileType);
         return livroRepository.save(livroModelo);
     }
 

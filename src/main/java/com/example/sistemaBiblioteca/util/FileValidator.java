@@ -6,7 +6,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 import java.util.List;
 
@@ -76,6 +79,19 @@ public class FileValidator {
     }
 
     /**
+     * Copia a imagem fornecida para o diretório especificado.
+     *
+     * @param file           o arquivo de imagem a ser copiado
+     * @param imageDirectory o diretório de destino para onde a imagem será copiada
+     * @throws IOException se ocorrer um erro de E/S durante a cópia do arquivo
+     */
+    public void copiarImagem(
+            MultipartFile file,
+            String imageDirectory) throws IOException {
+        Files.copy(file.getInputStream(), Paths.get(imageDirectory), StandardCopyOption.REPLACE_EXISTING);
+    }
+
+    /**
      * Deleta a imagem associada a um livro do sistema.
      *
      * @param livro o livro do qual a imagem deve ser deletada
@@ -106,5 +122,17 @@ public class FileValidator {
             throw new IllegalArgumentException("Imagem não fornecida");
         }
         validateFile(imagem);
+    }
+
+    /**
+     * Recupera o tipo de arquivo (extensão) da imagem associada ao livro fornecido.
+     *
+     * @param livro o objeto modelo do livro que contém o nome do arquivo da imagem
+     * @return o tipo de arquivo (extensão) da imagem, incluindo o ponto (por
+     *         exemplo, ".jpg", ".png")
+     */
+    public String getFileTypeFromImagemDoLivro(LivroModelo livro) {
+        String imagemDoLivro = livro.getImagemDoLivro();
+        return imagemDoLivro.substring(imagemDoLivro.lastIndexOf('.'));
     }
 }
