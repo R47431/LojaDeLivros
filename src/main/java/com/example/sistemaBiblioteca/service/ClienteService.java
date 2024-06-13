@@ -34,12 +34,8 @@ public class ClienteService {
         this.loanValidator = loanValidator;
     }
 
-    public Optional<ClienteModelo> encontrarClientre(Long clienteId) {
-        Optional<ClienteModelo> clienteOptional = clienteRepository.findById(clienteId);
-        if (!clienteOptional.isPresent()) {
-            throw new NotFoundException("Cliente nao Encontrado");
-        }
-        return clienteOptional;
+    public ClienteModelo encontrarClientre(Long clienteId) {
+        return loanValidator.buscarClientePorId(clienteId);
 
     }
 

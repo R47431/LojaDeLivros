@@ -66,6 +66,13 @@ public class LivroController {
         return ResponseEntity.ok().body("livro deletado");
     }
 
+    /*
+    @GetMapping("/livros/gener")
+    public List<LivroModelo> getLivrosPorGenero(@RequestParam String genero) {
+        return livroService.filtroDeLivro(genero);
+    }
+
+     */
 
 
 }

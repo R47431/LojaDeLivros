@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.List;
 import java.util.Objects;
 
 @Service
@@ -84,7 +85,7 @@ public class LivroService {
             fileType = fileValidator.getFileType(Objects.requireNonNull(imagem.getContentType()));
             String imageDiretory = fileValidator.getImageDirectory(livro, fileType);
             fileValidator.copiarImagem(imagem, imageDiretory);
-        }else {
+        } else {
             fileType = fileValidator.getFileTypeFromImagemDoLivro(livro);
         }
         LivroModelo livroModelo = mapper.map(livroDto, LivroModelo.class);
@@ -105,4 +106,9 @@ public class LivroService {
         fileValidator.deletarImagem(livroOptional);
         livroRepository.deleteById(id);
     }
+
+    public List<LivroModelo> filtroDeLivroporGenero(String gen) {
+        return livroRepository.findByGenero(gen);
+    }
+
 }

@@ -36,7 +36,7 @@ public class ClienteController {
 
   @GetMapping("/{clienteId}")
   public ResponseEntity<?> getClienteComEmprestimos(@PathVariable Long clienteId) {
-    Optional<ClienteModelo> cliente = clienteService.encontrarClientre(clienteId);
+    ClienteModelo cliente = clienteService.encontrarClientre(clienteId);
     return ResponseEntity.ok(cliente);
   }
 
