@@ -15,8 +15,6 @@ import com.example.sistemaBiblioteca.model.ClienteModelo;
 import com.example.sistemaBiblioteca.service.ClienteService;
 import com.example.sistemaBiblioteca.dto.ClienteDTO;
 
-import java.util.Optional;
-
 import javax.validation.Valid;
 
 @RestController
